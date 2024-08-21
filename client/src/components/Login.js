@@ -1,35 +1,96 @@
 import React, { useState } from 'react';
-import '../index.css';
+import { useHistory } from 'react-router-dom';
 
-const Login = ({ handleLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function Login({ setCurrentUser }) {
+    const [userType, setUserType] = useState('owner');
+    const [username, setUsername] = useState('johndoe');
+    const [password, setPassword] = useState('password123');
+    const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleLogin(username, password);
-  };
+    const history = useHistory();
 
-  return (
-    <div>
-      <h1 style={{'textAlign': 'center'}}>Please Login to Continue</h1>
-      <form className="login-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
-};
+    const handleLogin = (e) => {
+        e.preventDefault();
+
+        if (!userType) {
+            setError('Please select a user type.');
+            return;
+        }
+
+        const queryEndpoint = 
+            userType === 'owner' 
+            ? '/owners' 
+            : userType === 'worker' 
+            ? '/workers' 
+            : '/groomers';
+
+        fetch(queryEndpoint)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch users: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then((users) => {
+                const user = users.find((u) => u.username === username && u.password === password);
+                if (user) {
+                    setCurrentUser({ ...user, role: userType });
+                    setError('');
+                    history.push(`/${userType}s`);
+                    console.log('Logged in as:', user);
+                } else {
+                    setError('Invalid username or password.');
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setError('Failed to fetch users.');
+            });
+    };
+
+    return (
+        <div className="login-container">
+            <h2>Login</h2>
+            <form onSubmit={handleLogin}>
+                <label>
+                    Select User Type:
+                    <select 
+                        value={userType} 
+                        onChange={(e) => setUserType(e.target.value)}
+                    >
+                        <option value="">Select...</option>
+                        <option value="owner">Owner</option>
+                        <option value="worker">Worker</option>
+                        <option value="groomer">Groomer</option>
+                    </select>
+                </label>
+
+                <label>
+                    Username:
+                    <input 
+                        type="text" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                        required 
+                    />
+                </label>
+
+                <label>
+                    Password:
+                    <input 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                    />
+                </label>
+
+                <button type="submit">Login</button>
+
+                {error && <p className="error">{error}</p>}
+            </form>
+        </div>
+    );
+}
 
 export default Login;

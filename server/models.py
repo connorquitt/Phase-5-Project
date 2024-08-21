@@ -2,8 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
-from datetime import datetime
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -11,135 +9,76 @@ metadata = MetaData(naming_convention={
 
 db = SQLAlchemy(metadata=metadata)
 
-class EmployeeMeeting(db.Model, SerializerMixin):
-    __tablename__ = 'employee_meetings'
-
-    serialize_rules = ('-meetings.employee_meetings', '-employees.employee_meetings',)
-
+class Owner(db.Model, SerializerMixin):
+    __tablename__ = 'owners'
 
     id = db.Column(db.Integer, primary_key=True)
-    rsvp = db.Column(db.Boolean)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
-    meeting_id = db.Column(db.Integer, db.ForeignKey('meetings.id'))
+    username = db.Column(db.String)
+    password = db.Column(db.String)
 
-    employee = db.relationship('Employee', back_populates='employee_meetings')
-    meeting = db.relationship('Meeting', back_populates='employee_meetings')
+    pets = db.relationship('Pet', back_populates='owner')
+    worker_pets = db.relationship('WorkerPet', back_populates='owner')
+
 
     def to_dict(self):
         return {
             'id': self.id,
-            'rsvp': self.rsvp,
-            'employee_id': self.employee_id,
-            'meeting_id': self.meeting_id,
-            'employee': self.employee.name,
-            'meeting': self.meeting.topic
+            'username': self.username,
+            'password': self.password,
+            'pets': [pet.to_dict() for pet in self.pets],
+            'worker_pets': [worker_pet.to_dict() for worker_pet in self.worker_pets],
+
         }
-
-    def __repr__(self):
-        return f'<EmployeeMeeting Employee: {self.employee}, Meeting: {self.meeting}, RSVP: {self.rsvp}>'
-
-class Employee(db.Model, SerializerMixin):
-    __tablename__ = 'employees'
-
-    serialize_rules = ('-employee_meetings.employees',)
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    hire_date = db.Column(db.Date, nullable=True)
-    manager_id = db.Column(db.Integer, db.ForeignKey('managers.id'))
-
-    manager = db.relationship('Manager', back_populates='employees')
-    employee_meetings = db.relationship('EmployeeMeeting', back_populates='employee')
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'hire_date': self.hire_date,
-            'manager': self.manager.to_dict() if self.manager else None,
-            'employee_meetings': [emp_meeting.to_dict() for emp_meeting in self.employee_meetings],
-        }
-
-    def __repr__(self):
-        return f'<Employee {self.id}, {self.name}, {self.hire_date}>'
-
-    @validates('name')
-    def validate_name(self, key, name):
-        if not isinstance(name, str):
-            raise ValueError('Invalid name')
-        if len(name) <= 3:
-            raise ValueError('Name must be at least 3 characters')
-        return name
     
-    @validates('manager_id')
-    def validate_manager_id(self, key, manager_id):
-        if not isinstance(manager_id, int):
-            raise ValueError('Invalid manager ID')
-        return manager_id
-
-
-class Meeting(db.Model, SerializerMixin):
-    __tablename__ = 'meetings'
-
-    serialize_rules = ('-employee_meetings.meetings',)  # Avoid recursion by excluding employees
-
-    id = db.Column(db.Integer, primary_key=True)
-    topic = db.Column(db.String)
-    scheduled_time = db.Column(db.DateTime)
-    location = db.Column(db.String)
-
-    employee_meetings = db.relationship('EmployeeMeeting', back_populates='meeting')
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'topic': self.topic,
-            'scheduled_time': self.scheduled_time,
-            'location': self.location,
-            'employee_meetings': [emp_meeting.to_dict() for emp_meeting in self.employee_meetings],
-        }
-
     def __repr__(self):
-        return f'<Meeting {self.id}, {self.topic}, {self.scheduled_time}, {self.location}>'
+        return f'<Owner id: {self.id}, username: {self.username}, password: {self.password}>'
+    
 
-    @validates('topic')
-    def validate_topic(self, key, topic):
-        if not isinstance(topic, str):
-            raise ValueError('Invalid topic')
-        return topic
+    @validates('username')
+    def validate_username(self, key, username):
+        if not isinstance(username, str):
+            raise ValueError('Invalid username')
+        if len(username) < 3:
+            raise ValueError('Username must be at least 3 characters long')
+        return username
 
-    @validates('scheduled_time')
-    def validate_scheduled_time(self, key, scheduled_time):
-        if not isinstance(scheduled_time, datetime):
-            raise ValueError('Invalid scheduled time')
-        return scheduled_time
-
-    @validates('location')
-    def validate_location(self, key, location):
-        if not isinstance(location, str):
-            raise ValueError('Invalid location')
-        return location
+    @validates('password')
+    def validate_password(self, key, password):
+        if not isinstance(password, str):
+            raise ValueError('Invalid password')
+        if len(password) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return password
+    
 
 
-class Manager(db.Model, SerializerMixin):
-    __tablename__ = 'managers'
+class Pet(db.Model, SerializerMixin):
+    __tablename__ = 'pets'
+    serialize_rules = ('-groomer_pets.pets', '-worker_pets.pets',)
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    department = db.Column(db.String, nullable=False)
+    name = db.Column(db.String)
+    breed = db.Column(db.String)
+    age = db.Column(db.Integer)
+    owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
 
-    employees = db.relationship('Employee', back_populates='manager')
+    owner = db.relationship('Owner', back_populates='pets')
+
+    groomer_pets = db.relationship('GroomerPet', back_populates='pet')
+    worker_pets = db.relationship('WorkerPet', back_populates='pet')
 
     def to_dict(self):
         return {
             'id': self.id,
+            'owner': self.owner.username, #when adding a pet if there is no owner it breaks, make sure to add a default for the owner being none (need to add owner_id)
             'name': self.name,
-            'department': self.department,
-            'employees': [employee.name for employee in self.employees]
+            'breed': self.breed,
+            'age': self.age,
         }
-
+    
     def __repr__(self):
-        return f'<Manager {self.id}, {self.name}, {self.department}>'
+        return f'<Pet id: {self.id}, name: {self.name}, breed: {self.breed}, age: {self.age}>'
+    
 
     @validates('name')
     def validate_name(self, key, name):
@@ -147,16 +86,225 @@ class Manager(db.Model, SerializerMixin):
             raise ValueError('Invalid name')
         return name
 
-    @validates('department')
-    def validate_department(self, key, department):
-        if not isinstance(department, str):
-            raise ValueError('Invalid department')
-        return department
+    @validates('breed')
+    def validate_breed(self, key, breed):
+        if not isinstance(breed, str):
+            raise ValueError('Invalid breed')
+        return breed
+
+    @validates('age')
+    def validate_age(self, key, age):
+        if not isinstance(age, int) or age < 0:
+            raise ValueError('Invalid age')
+        return age
 
 
 
+class Worker(db.Model, SerializerMixin):
+    __tablename__ = 'workers'
+    serialize_rules = ('-worker_pets.workers',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    pet_walker = db.Column(db.Boolean)
+    pet_sitter = db.Column(db.Boolean)
+
+    worker_pets = db.relationship('WorkerPet', back_populates='worker')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password,
+            'pet_walker': self.pet_walker,
+            'dog_sitter': self.pet_sitter,
+        }
+    
+    def __repr__(self):
+        return f'<Worker id: {self.id}, username: {self.username}, password: {self.password}, walker: {self.pet_walker}, sitter: {self.pet_sitter}>'
+    
+
+    @validates('username')
+    def validate_username(self, key, username):
+        if not isinstance(username, str):
+            raise ValueError('Invalid username')
+        if len(username) < 3:
+            raise ValueError('Username must be at least 3 characters long')
+        return username
+
+    @validates('password')
+    def validate_password(self, key, password):
+        if not isinstance(password, str):
+            raise ValueError('Invalid password')
+        if len(password) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return password
+
+    @validates('pet_walker')
+    def validate_pet_walker(self, key, pet_walker):
+        if not isinstance(pet_walker, bool):
+            raise ValueError('Pet walker must be a boolean')
+        return pet_walker
+
+    @validates('pet_sitter')
+    def validate_pet_sitter(self, key, pet_sitter):
+        if not isinstance(pet_sitter, bool):
+            raise ValueError('Pet sitter must be a boolean')
+        return pet_sitter
 
 
 
+class Groomer(db.Model, SerializerMixin):
+    __tablename__ = 'groomers'
+    serialize_rules = ('-groomer_pets.groomers',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    hours = db.Column(db.String)
+    address = db.Column(db.String)
+
+    groomer_pets = db.relationship('GroomerPet', back_populates='groomer')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password,
+            'hours': self.hours,
+            'address': self.address,
+        }
+    
+    def __repr__(self):
+        return f'<Groomer id: {self.id}, username: {self.username}, password: {self.password}, hours: {self.hours}, address: {self.address}>'
+    
+
+    @validates('username')
+    def validate_username(self, key, username):
+        if not isinstance(username, str):
+            raise ValueError('Invalid username')
+        if len(username) < 3:
+            raise ValueError('Username must be at least 3 characters long')
+        return username
+
+    @validates('password')
+    def validate_password(self, key, password):
+        if not isinstance(password, str):
+            raise ValueError('Invalid password')
+        if len(password) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return password
+
+    @validates('hours')
+    def validate_hours(self, key, hours):
+        if not isinstance(hours, str):
+            raise ValueError('Invalid hours')
+        return hours
+
+    @validates('address')
+    def validate_address(self, key, address):
+        if not isinstance(address, str):
+            raise ValueError('Invalid address')
+        return address
 
 
+
+class GroomerPet(db.Model, SerializerMixin):
+    __tablename__ = 'groomer_pets'
+    serialize_rules = ('-groomers.groomer_pets', '-pets.groomer_pets',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    appointment_time = db.Column(db.Integer) #datetime type thing needed
+    groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
+
+    groomer = db.relationship('Groomer', back_populates='groomer_pets') 
+    pet = db.relationship('Pet', back_populates='groomer_pets') #would like GroomerPet.pet to show the appt time and info as well as the pet
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'appointment_time': self.appointment_time, #when adding a Groomer_pet instance without appointment_time it will crash
+            'groomer_id': self.groomer_id, #when adding a GroomerPet instance without groomer_id it will crash
+            'pet_id': self.pet_id,
+
+            'groomer': self.groomer.username,
+            'pet': self.pet.name,
+        }
+    
+    def __repr__(self):
+        return f'<GroomerPets id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}>'
+    
+
+    #@validates('appointment_time')
+    #def validate_appointment_time(self, key, appointment_time):
+    #    if not isinstance(appointment_time, str):
+    #        raise ValueError('Invalid appointment time')
+    #    return appointment_time
+
+    @validates('groomer_id')
+    def validate_groomer_id(self, key, groomer_id):
+        if not isinstance(groomer_id, int):
+            raise ValueError('Invalid groomer ID')
+        return groomer_id
+
+    @validates('pet_id')
+    def validate_pet_id(self, key, pet_id):
+        if not isinstance(pet_id, int):
+            raise ValueError('Invalid pet ID')
+        return pet_id
+
+
+
+class WorkerPet(db.Model, SerializerMixin):
+    __tablename__ = 'worker_pets'
+    serialize_rules = ('-workers.worker_pets', '-pets.worker_pets',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    arrival_time = db.Column(db.String) #datetime type thing needed
+    owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
+    worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
+
+    worker = db.relationship('Worker', back_populates='worker_pets')
+    pet = db.relationship('Pet', back_populates='worker_pets') #would like WorkerPet.pet to show more info than just the pet
+    owner = db.relationship('Owner', back_populates='worker_pets')
+
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'arrival_time': self.arrival_time, #when adding a WorkerPet instance without an arrival_time it will crash
+            'worker_id': self.worker_id,
+            'pet_id': self.pet_id,
+            'owner_id': self.owner_id,
+
+
+            'worker': self.worker.username, #when adding a WorkerPet instance without a worker_id it will crash
+            'pet': self.pet.name, #when adding a WorkerPet instance without a pet_id it will crash
+        }
+
+    def __repr__(self):
+        return f'<WorkerPet id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}>'
+    
+
+    #@validates('arrival_time')
+    #def validate_arrival_time(self, key, arrival_time):
+    #    if not isinstance(arrival_time, int):
+    #        raise ValueError('Arrival time must be an integer')
+    #    if arrival_time < 0:
+    #       raise ValueError('Arrival time must be a non-negative integer')
+    #    return arrival_time
+    
+    #@validates('worker_id')
+    #def validate_worker_id(self, key, worker_id):
+    #    if not isinstance(worker_id, int):
+    #        raise ValueError('Worker ID must be an integer')
+    #   return worker_id
+    
+    #@validates('pet_id')
+    #def validate_pet_id(self, key, pet_id):
+    #    if not isinstance(pet_id, int):
+    #        raise ValueError('Pet ID must be an integer')
+    #    return pet_id
