@@ -6,7 +6,7 @@
 
     import React, {useContext} from 'react';
     import { NavLink } from 'react-router-dom';
-    import UserContext from './UseContext';
+    import { UserContext } from '../App.js';
     
     function Groomers() {
         const context = useContext(UserContext);

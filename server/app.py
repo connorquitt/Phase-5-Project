@@ -73,11 +73,14 @@ def pets():
     
     elif request.method == 'POST': #when adding a pet if there is no owner it breaks, make sure to add a default for the owner being none (need to add owner_id)
         data = request.get_json()
+
+        owner_id = data.get('owner_id') or None
+
         new_pet = Pet(
             name=data.get('name'),
             breed=data.get('breed'),
             age=data.get('age'),
-            owner_id=data.get('owner_id')
+            owner_id=owner_id,
         )
         db.session.add(new_pet)
         db.session.commit()
@@ -266,17 +269,41 @@ def worker_pets():
             jsonify([wp.to_dict() for wp in worker_pets]), 200
         )
     
-    elif request.method == 'POST': #if worker_id, pet_id, or arrival_time is missing POST request will fail
+    elif request.method == 'POST':
         data = request.get_json()
-        arrival_time = datetime.fromtimestamp(data.get('arrival_time'))
-        new_worker_pet = WorkerPet(
-            arrival_time=arrival_time,
-            worker_id=data.get('worker_id'),
-            pet_id=data.get('pet_id'),
-        )
-        db.session.add(new_worker_pet)
-        db.session.commit()
-        return make_response(new_worker_pet.to_dict(), 201)
+        
+        # Log incoming data for debugging
+        print(f"Received data: {data}")
+        
+        # Ensure arrival_time is converted to an integer
+        try:
+            arrival_time = datetime.fromtimestamp(int(data.get('arrival_time')))
+        except (TypeError, ValueError) as e:
+            return make_response(jsonify({"error": f"Invalid arrival_time format: {e}"}), 400)
+        
+        # Ensure all necessary data is present
+        required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type']
+        missing_fields = [field for field in required_fields if data.get(field) is None]
+        
+        if missing_fields:
+            return make_response(jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400)
+        
+        # Create new WorkerPet record
+        try:
+            new_worker_pet = WorkerPet(
+                arrival_time=arrival_time,
+                worker_id=data.get('worker_id'),
+                pet_id=data.get('pet_id'),
+                owner_id=data.get('owner_id'),
+                job_type=data.get('job_type'),
+            )
+            db.session.add(new_worker_pet)
+            db.session.commit()
+            return make_response(new_worker_pet.to_dict(), 201)
+        except Exception as e:
+            # Log any exception that occurs
+            print(f"Error creating WorkerPet: {e}")
+            return make_response(jsonify({"error": "An error occurred while creating the job"}), 500)
 
 @app.route('/worker_pets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def worker_pet_by_id(id):

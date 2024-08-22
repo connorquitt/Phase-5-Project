@@ -259,13 +259,13 @@ class GroomerPet(db.Model, SerializerMixin):
 
 class WorkerPet(db.Model, SerializerMixin):
     __tablename__ = 'worker_pets'
-    serialize_rules = ('-workers.worker_pets', '-pets.worker_pets',)
 
     id = db.Column(db.Integer, primary_key=True)
     arrival_time = db.Column(db.String) #datetime type thing needed
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
+    job_type = db.Column(db.String)
 
     worker = db.relationship('Worker', back_populates='worker_pets')
     pet = db.relationship('Pet', back_populates='worker_pets') #would like WorkerPet.pet to show more info than just the pet
@@ -279,10 +279,12 @@ class WorkerPet(db.Model, SerializerMixin):
             'worker_id': self.worker_id,
             'pet_id': self.pet_id,
             'owner_id': self.owner_id,
+            'job_type': self.job_type,
 
 
             'worker': self.worker.username, #when adding a WorkerPet instance without a worker_id it will crash
             'pet': self.pet.name, #when adding a WorkerPet instance without a pet_id it will crash
+            
         }
 
     def __repr__(self):

@@ -19,7 +19,8 @@ with app.app_context():
     owner3 = Owner(username='alice', password='alicepass')
     owner4 = Owner(username='bob', password='bobpass')
     owner5 = Owner(username='charlie', password='charliepass')
-    db.session.add_all([owner1, owner2, owner3, owner4, owner5])
+    owner6 = Owner(username='None', password='password')
+    db.session.add_all([owner1, owner2, owner3, owner4, owner5, owner6])
     db.session.commit()
 
     # Add pets
@@ -60,10 +61,10 @@ with app.app_context():
     db.session.commit()
 
     # Add worker-pet appointments
-    wp1 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=worker1, pet=pet1)
-    wp2 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=worker2, pet=pet2)
-    wp3 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=worker3, pet=pet3)
-    wp4 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker4, pet=pet4)
-    wp5 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5)
+    wp1 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=unclaimed, pet=pet1, job_type='pet_walker')
+    wp2 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker')
+    wp3 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=worker3, pet=pet3, job_type='pet_walker')
+    wp4 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker4, pet=pet4, job_type='pet_sitter')
+    wp5 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5, job_type='pet_sitter')
     db.session.add_all([wp1, wp2, wp3, wp4, wp5])
     db.session.commit()
