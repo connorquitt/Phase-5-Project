@@ -24,11 +24,11 @@ with app.app_context():
     db.session.commit()
 
     # Add pets
-    pet1 = Pet(name='Fido', breed='Labrador', age=3, owner=owner1)
-    pet2 = Pet(name='Whiskers', breed='Siamese', age=2, owner=owner1)
-    pet3 = Pet(name='Rex', breed='German Shepherd', age=4, owner=owner3)
-    pet4 = Pet(name='Fluffy', breed='Persian', age=1, owner=owner4)
-    pet5 = Pet(name='Spot', breed='Dalmatian', age=5, owner=owner5)
+    pet1 = Pet(name='Fido', breed='Tibetan Spaniel', age=3, owner=owner1)
+    pet2 = Pet(name='Whiskers', breed='Grand Basset Griffon Vendéen', age=2, owner=owner1)
+    pet3 = Pet(name='Rex', breed='Hanoverian Scenthound', age=4, owner=owner3)
+    pet4 = Pet(name='Fluffy', breed='Border Collie', age=1, owner=owner4)
+    pet5 = Pet(name='Spot', breed='Skye Terrier', age=5, owner=owner5)
     db.session.add_all([pet1, pet2, pet3, pet4, pet5])
     db.session.commit()
 

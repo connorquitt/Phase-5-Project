@@ -149,4 +149,28 @@ body {
   background-color: #0056b3;
 }
 
+/* Styles for pet cards and breed cards */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px;
+  width: 300px; /* Adjust width as needed */
+  background-color: #fff;
+}
 
+.card-title {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.card-body {
+  font-size: 0.9em;
+  color: #333;
+}
+
+.card-body p {
+  margin: 4px 0;
+}
