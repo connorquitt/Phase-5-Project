@@ -13,13 +13,10 @@
     
     function Owners() {
         const context = useContext(UserContext);
-    
-        const [notes, setNotes] = useState('');
-        const [jobType, setJobType] = useState('');
-        const [selectedPet, setSelectedPet] = useState('');
-        const [time, setTime] = useState('');
+
         const [pets, setPets] = useState([]);
         const [jobs, setJobs] = useState([]);
+        const [groomers, setGroomers] = useState([]);
     
         const user = context.currentUser;
     
@@ -33,6 +30,12 @@
             fetch('/worker_pets')
                 .then(res => res.json())
                 .then(res => setJobs(res));
+        }, []);
+
+        useEffect(() => {
+            fetch('/groomers')
+                .then(res => res.json())
+                .then(res => setGroomers(res))
         }, []);
     
         const deletePet = (petId) => {
@@ -75,7 +78,7 @@
                             if (pet && pet.owner === user.username) {
                                 return (
                                     <div key={pet.id} className="pet-card-container">
-                                        <PetCard pet={pet} onDelete={deletePet}/>
+                                        <PetCard pet={pet} onDelete={deletePet} onEdit={updatePet}/>
                                     </div>
                                 );
                             }
@@ -103,6 +106,8 @@
                     pet_id: selectedPet,
                     job_type: jobType,
                 };
+
+                console.log('running')
         
                 fetch('/worker_pets', {
                     method: 'POST',
@@ -258,6 +263,100 @@
                 </div>
             );
         }
+
+        const updatePet = (updatedPet) => {
+            setPets(prevPets => prevPets.map(pet => pet.id === updatedPet.id ? updatedPet : pet));
+        };
+
+
+
+        function BookGroomingAppt() {
+            const [selectedGroomer, setSelectedGroomer] = useState('');
+            const [selectedPet, setSelectedPet] = useState('');
+            const [appointmentTime, setAppointmentTime] = useState('');
+        
+            const handleBookAppointment = (e) => {
+                e.preventDefault();
+        
+                const requestData = {
+                    groomer_id: parseInt(selectedGroomer),
+                    pet_id: parseInt(selectedPet),
+                    appointment_time: appointmentTime  // Ensure this is in the format the backend expects
+                };
+        
+                console.log("Sending appointment request:", requestData); // Debugging log
+        
+                fetch('/groomer_pets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Failed to book appointment');
+                    }
+                    return res.json();
+                })
+                .then(res => {
+                    console.log("Appointment booked successfully:", res);
+                    setSelectedGroomer('');
+                    setSelectedPet('');
+                    setAppointmentTime('');
+                })
+                .catch(error => {
+                    console.error('Error booking appointment:', error);
+                });
+            };
+        
+            return (
+                <div className="book-grooming-container">
+                    <h3>Book Grooming Appointment</h3>
+                    <form onSubmit={handleBookAppointment}>
+                        <label>
+                            Select Grooming Service:
+                            <select 
+                                value={selectedGroomer}
+                                onChange={(e) => setSelectedGroomer(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="">Select...</option>
+                                {groomers.map((groomer) => (
+                                    <option key={groomer.id} value={groomer.id}>{groomer.username}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label>
+                            Select Pet:
+                            <select
+                                value={selectedPet}
+                                onChange={(e) => setSelectedPet(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="">Select...</option>
+                                {user.pets.map((pet) => (
+                                    <option value={pet.id} key={pet.id}>{pet.name}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label>
+                            Appointment Time:
+                            <input
+                                type="datetime-local"
+                                value={appointmentTime}
+                                onChange={(e) => setAppointmentTime(e.target.value)}
+                                className="form-input"
+                            />
+                        </label>
+                        <button type="submit" className="form-submit-button">Book Appointment</button>
+                    </form>
+                </div>
+            );
+        }
+        
+
+
     
         const Navbar = () => {
             return (
@@ -307,6 +406,7 @@
                 <div className="forms-container">
                     <CreateListing />
                     <CreatePet />
+                    <BookGroomingAppt />
                 </div>
                 <DogCards />
                 <MyJobs />

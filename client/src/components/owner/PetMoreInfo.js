@@ -1,15 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
-import { UserContext } from '../App';
-import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
-import { MakePetCard } from './PetCard';
+import React, { useState, useEffect } from 'react';
 
-function PetMoreInfo() {
+function PetMoreInfo({ pet }) {
     const [breeds, setBreeds] = useState();
-    const petBreed = useParams();
-
-
-    const context = useContext(UserContext)
 
     const dogBreeds = {
         "Caucasian Shepherd Dog": "68f47c5a-5115-47cd-9849-e45d3c378f12",
@@ -24,7 +16,7 @@ function PetMoreInfo() {
         "Skye Terrier": "beff84c3-66c4-4335-beba-f346c2565881"
     };
 
-    const petBreedId = dogBreeds[petBreed.id]
+    const petBreedId = dogBreeds[pet.breed]
 
     useEffect(() => {
         fetch(`https://dogapi.dog/api/v2/breeds/${petBreedId}`)
@@ -34,22 +26,45 @@ function PetMoreInfo() {
                 const breedsArray = res.data || []; 
                 setBreeds(breedsArray);
             });
-    }, []);
-
-    console.log(dogBreeds['Hokkaido'])
-    console.log(context.currentUser)
-    console.log(breeds)
+    }, [pet.id]);
 
     if (!breeds) {
         return <h1>...loading</h1>
     }
     return (
         <div>
-            <MakePetCard breed={breeds} key={breeds.id} />
+            <MakePetCard breed={breeds} key={breeds.id} pet={pet} />
         </div>
     )
 
 }
 
+
+function MakePetCard({ breed, pet }) {
+    
+    if (!breed || !breed.attributes) {
+        // Show loading state or fallback UI
+        return <h3>Loading...</h3>;
+    }
+
+    const { name, attributes } = breed;
+
+    return (
+        <div className="card">
+            <h3 className="card-title">{name}</h3>
+            <div className="card-body">
+                <h1><strong>Name:</strong> {pet.name}</h1>
+                <h3><strong>Breed:</strong> {attributes.name}</h3>
+                <p><strong>Hypoallergenic:</strong> {attributes.hypoallergenic ? 'Yes' : 'No'}</p>
+                <p><strong>Life Span:</strong> {attributes.life.min} - {attributes.life.max} years</p>
+                <p><strong>Female Weight:</strong> {attributes.female_weight.min} - {attributes.female_weight.max} kg</p>
+                <p><strong>Male Weight:</strong> {attributes.male_weight.min} - {attributes.male_weight.max} kg</p>
+            </div>
+        </div>
+    );
+}
+
+
 export default PetMoreInfo;
+export {MakePetCard}
 

@@ -215,7 +215,7 @@ class GroomerPet(db.Model, SerializerMixin):
     serialize_rules = ('-groomers.groomer_pets', '-pets.groomer_pets',)
 
     id = db.Column(db.Integer, primary_key=True)
-    appointment_time = db.Column(db.Integer) #datetime type thing needed
+    appointment_time = db.Column(db.String) #datetime type thing needed
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
 

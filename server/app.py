@@ -217,18 +217,22 @@ def groomer_pets():
         return make_response(
             jsonify([gp.to_dict() for gp in groomer_pets]), 200
         )
-    
-    elif request.method == 'POST': #needs appointment_time and groomer_id or it will crash
+    elif request.method == 'POST':
         data = request.get_json()
-        appointment_time = datetime.fromtimestamp(data.get('appointment_time'))
-        new_groomer_pet = GroomerPet(
-            appointment_time=appointment_time,
-            groomer_id=data.get('groomer_id'),
-            pet_id=data.get('pet_id'),
-        )
-        db.session.add(new_groomer_pet)
-        db.session.commit()
-        return make_response(new_groomer_pet.to_dict(), 201)
+        try:
+            new_groomer_pet = GroomerPet(
+                appointment_time=data.get('appointment_time'),
+                groomer_id=data.get('groomer_id'),
+                pet_id=data.get('pet_id'),
+            )
+            db.session.add(new_groomer_pet)
+            db.session.commit()
+            return make_response(new_groomer_pet.to_dict(), 201)
+        except Exception as e:
+            print(f"Error creating GroomerPets: {e}")
+            return make_response(jsonify({"error": "An error occurred while creating the appt"}), 500)
+
+
 
 @app.route('/groomer_pets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def groomer_pet_by_id(id):

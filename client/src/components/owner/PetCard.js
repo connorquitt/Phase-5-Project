@@ -1,38 +1,84 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import PetMoreInfo, { MakePetCard } from './PetMoreInfo';
 
-function PetCard({ pet }) {
+function PetCard({ pet, onEdit }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [isMoreInfo, setIsMoreInfo] = useState(false); // New state to toggle more info
+    const [newName, setNewName] = useState(pet.name);
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleSaveClick = () => {
+        fetch(`/pets/${pet.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: newName }),
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to update pet info');
+            }
+            return res.json();
+        })
+        .then(updatedPet => {
+            onEdit(updatedPet);
+            setIsEditing(false);
+        })
+        .catch(error => {
+            console.error('Error updating pet:', error);
+        });
+    };
+
+    const handleCancelClick = () => {
+        setIsEditing(false);
+        setNewName(pet.name);
+    };
+
+    const handleMoreInfoClick = (e) => {
+        setIsMoreInfo(!isMoreInfo); // Toggle the more info view
+        return <MakePetCard PetBreed={pet.breed}/>
+    };
+
     return (
         <div key={pet.id} className='card'>
-            <h1>Name: {pet.name}</h1>
-            <h3>Breed: {pet.breed}</h3>
-            <h3>Age: {pet.age}</h3>
-            <NavLink to={`/pet/${pet.breed}`}>
-                <button id={pet.id}>More Info</button>
-            </NavLink>
-            <NavLink to={`/groomers/${pet.id}`}>
-                <button id={pet.id}>Book Grooming</button>
-            </NavLink>
-        </div>
-    )
-}
-
-function MakePetCard({ breed }) {
-    const { name, attributes } = breed;
-
-    return (
-        <div className="card">
-            <h3 className="card-title">{name}</h3>
-            <div className="card-body">
-                <h3><strong>Breed:</strong> {attributes.name}</h3>
-                <p><strong>Hypoallergenic:</strong> {attributes.hypoallergenic ? 'Yes' : 'No'}</p>
-                <p><strong>Life Span:</strong> {attributes.life.min} - {attributes.life.max} years</p>
-                <p><strong>Female Weight:</strong> {attributes.female_weight.min} - {attributes.female_weight.max} kg</p>
-                <p><strong>Male Weight:</strong> {attributes.male_weight.min} - {attributes.male_weight.max} kg</p>
-            </div>
+            {isEditing ? (
+                <>
+                    <input 
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="form-input"
+                    />
+                    <button onClick={handleSaveClick} className="form-submit-button">Save</button>
+                    <button onClick={handleCancelClick} className="form-cancel-button">Cancel</button>
+                </>
+            ) : isMoreInfo ? ( // Conditional rendering for more info view
+                <>
+                    <NavLink to={'/owners'}>
+                        <button onClick={handleMoreInfoClick} className="edit-button">Less Info</button>
+                    </NavLink>
+                    <PetMoreInfo pet={pet}/>
+                </>
+            ) : (
+                <>
+                    <h1>Name: {pet.name}</h1>
+                    <h3>Breed: {pet.breed}</h3>
+                    <h3>Age: {pet.age}</h3>
+                    <button onClick={handleEditClick} className="edit-button">Edit Pet Info</button>
+                    <NavLink to={`/owners/${pet.id}`}>
+                        <button onClick={handleMoreInfoClick} className="more-info-button">More Info</button>
+                    </NavLink>
+                </>
+            )}
         </div>
     );
 }
 
+
+
 export default PetCard
-export {MakePetCard}

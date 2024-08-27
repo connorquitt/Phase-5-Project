@@ -22,7 +22,7 @@ const Routes = ({ isLoggedIn, handleLogin, setCurrentUser }) => {
                 {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
             </Route>
             <Route path="/pet/:id">
-                {isLoggedIn ? <PetInfo /> : <Redirect to="/login" />}
+                {isLoggedIn ? <Owners /> : <Redirect to="/login" />}
             </Route>
             <Route path="/appointments">
                 {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
