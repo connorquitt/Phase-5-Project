@@ -216,3 +216,39 @@ body {
 .claim-button:hover {
   background-color: #218838;
 }
+
+.cancel-button {
+  background-color: red;
+  color: white;
+  padding: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.claim-button {
+  background-color: green;
+  color: white;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Ensure that the container is relatively positioned */
+.appointment-card-container {
+  position: relative;
+  display: inline-block; /* Allows the card to be positioned relative to this container */
+}
+
+/* Position the popup card absolutely */
+.pet-more-info {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  z-index: 1000; /* Ensure it's on top */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+

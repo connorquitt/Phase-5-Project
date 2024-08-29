@@ -118,7 +118,7 @@ class Worker(db.Model, SerializerMixin):
             'username': self.username,
             'password': self.password,
             'pet_walker': self.pet_walker,
-            'dog_sitter': self.pet_sitter,
+            'pet_sitter': self.pet_sitter,
         }
     
     def __repr__(self):

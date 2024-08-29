@@ -41,7 +41,7 @@ function PetCard({ pet, onEdit }) {
 
     const handleMoreInfoClick = (e) => {
         setIsMoreInfo(!isMoreInfo); // Toggle the more info view
-        return <MakePetCard PetBreed={pet.breed}/>
+        //return <MakePetCard PetBreed={pet.breed}/>
     };
 
     return (
@@ -59,10 +59,10 @@ function PetCard({ pet, onEdit }) {
                 </>
             ) : isMoreInfo ? ( // Conditional rendering for more info view
                 <>
+                    <PetMoreInfo pet={pet}/>
                     <NavLink to={'/owners'}>
                         <button onClick={handleMoreInfoClick} className="edit-button">Less Info</button>
                     </NavLink>
-                    <PetMoreInfo pet={pet}/>
                 </>
             ) : (
                 <>
