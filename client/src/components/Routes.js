@@ -5,8 +5,9 @@ import Workers from './worker/Workers';
 import Groomers from './groomer/Groomers';
 import PetInfo from './owner/PetMoreInfo';
 import Login from './Login';
+import Signup from './Signup';
 
-const Routes = ({ isLoggedIn, handleLogin, setCurrentUser }) => {
+const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
     return (
         <Switch>
             <Route path="/owners">
@@ -22,10 +23,13 @@ const Routes = ({ isLoggedIn, handleLogin, setCurrentUser }) => {
                 {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
             </Route>
             <Route path="/pet/:id">
-                {isLoggedIn ? <Owners /> : <Redirect to="/login" />}
+                {isLoggedIn ? <PetInfo /> : <Redirect to="/login" />}
             </Route>
             <Route path="/appointments">
                 {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
+            </Route>
+            <Route path="/signup">
+                <Signup />
             </Route>
             <Route path="/login">
                 {isLoggedIn ? <Redirect to="/owners" /> : <Login setCurrentUser={handleLogin} />}

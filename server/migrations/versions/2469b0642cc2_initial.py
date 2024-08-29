@@ -1,8 +1,8 @@
-"""initial migration
+"""initial
 
-Revision ID: 32eb22f57c12
+Revision ID: 2469b0642cc2
 Revises: 
-Create Date: 2024-08-21 14:34:15.231155
+Create Date: 2024-08-29 11:49:17.991475
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '32eb22f57c12'
+revision = '2469b0642cc2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,7 +51,7 @@ def upgrade():
     )
     op.create_table('groomer_pets',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('appointment_time', sa.Integer(), nullable=True),
+    sa.Column('appointment_time', sa.String(), nullable=True),
     sa.Column('groomer_id', sa.Integer(), nullable=True),
     sa.Column('pet_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['groomer_id'], ['groomers.id'], name=op.f('fk_groomer_pets_groomer_id_groomers')),
@@ -64,6 +64,7 @@ def upgrade():
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.Column('worker_id', sa.Integer(), nullable=True),
     sa.Column('pet_id', sa.Integer(), nullable=True),
+    sa.Column('job_type', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['owners.id'], name=op.f('fk_worker_pets_owner_id_owners')),
     sa.ForeignKeyConstraint(['pet_id'], ['pets.id'], name=op.f('fk_worker_pets_pet_id_pets')),
     sa.ForeignKeyConstraint(['worker_id'], ['workers.id'], name=op.f('fk_worker_pets_worker_id_workers')),

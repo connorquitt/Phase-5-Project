@@ -48,6 +48,10 @@ function Login({ setCurrentUser }) {
             });
     };
 
+    const redirectToSignup = () => {
+        history.push('/signup');
+    };
+
     return (
         <div className="login-container">
             <h2>Login</h2>
@@ -86,6 +90,8 @@ function Login({ setCurrentUser }) {
                 </label>
 
                 <button type="submit">Login</button>
+
+                <button type="button" onClick={redirectToSignup}>Signup</button>
 
                 {error && <p className="error">{error}</p>}
             </form>
