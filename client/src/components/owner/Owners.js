@@ -267,6 +267,7 @@
             const [selectedGroomer, setSelectedGroomer] = useState('');
             const [selectedPet, setSelectedPet] = useState('');
             const [appointmentTime, setAppointmentTime] = useState('');
+            const [service, setService] = useState('');
         
             const handleBookAppointment = (e) => {
                 e.preventDefault();
@@ -274,6 +275,7 @@
                 const requestData = {
                     groomer_id: parseInt(selectedGroomer),
                     pet_id: parseInt(selectedPet),
+                    service: service,
                     appointment_time: appointmentTime  // Ensure this is in the format the backend expects
                 };
         
@@ -297,6 +299,8 @@
                     setSelectedGroomer('');
                     setSelectedPet('');
                     setAppointmentTime('');
+                    setService('');
+
                 })
                 .catch(error => {
                     console.error('Error booking appointment:', error);
@@ -316,7 +320,7 @@
                             >
                                 <option value="">Select...</option>
                                 {groomers.map((groomer) => (
-                                    <option key={groomer.id} value={groomer.id}>{groomer.username}</option>
+                                    <option key={groomer.id} value={groomer.id}>{groomer.business_name}</option>
                                 ))}
                             </select>
                         </label>
@@ -331,6 +335,22 @@
                                 {user.pets.map((pet) => (
                                     <option value={pet.id} key={pet.id}>{pet.name}</option>
                                 ))}
+                            </select>
+                        </label>
+                        <label>
+                            Select Service:
+                            <select
+                                value={service}
+                                onChange={(e) => setService(e.target.value)}
+                                className='form-select'
+                            >
+                                <option value=''>Select...</option>
+                                <option value='Bathe and Dry'>Bath and Blow-Dry</option>
+                                <option value='Styling'>Styling</option>
+                                <option value='Deshedding'>Deshedding Treatment</option>
+                                <option value='Nail Trim'>Nail Trim</option>
+                                <option value='Ear Cleaning'>Ear Cleaning</option>
+                                <option value='Tick Treatment'>Flea and Tick Treatment</option>
                             </select>
                         </label>
                         <label>

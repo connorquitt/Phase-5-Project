@@ -173,6 +173,7 @@ def groomers():
     elif request.method == 'POST':
         data = request.get_json()
         new_groomer = Groomer(
+            business_name=data.get('business_name'),
             username=data.get('username'),
             password=data.get('password'),
             hours=data.get('hours'),

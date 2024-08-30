@@ -7,6 +7,7 @@ function Signup({ setCurrentUser }) {
     const [password, setPassword] = useState('');
     const [petWalker, setPetWalker] = useState(false);
     const [petSitter, setPetSitter] = useState(false);
+    const [businessName, setBusinessName] = useState('');
     const [address, setAddress] = useState('');
     const [hours, setHours] = useState('');
     const [error, setError] = useState('');
@@ -124,6 +125,15 @@ function Signup({ setCurrentUser }) {
 
                 {userType === 'groomer' && (
                     <>
+                        <label>
+                            Business Name:
+                            <input
+                                type='text'
+                                value={businessName}
+                                onChange={(e) => setBusinessName(e.target.value)}
+                                required
+                            />
+                        </label>
                         <label>
                             Address:
                             <input

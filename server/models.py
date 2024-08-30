@@ -160,6 +160,7 @@ class Groomer(db.Model, SerializerMixin):
     serialize_rules = ('-appointments.groomers',)
 
     id = db.Column(db.Integer, primary_key=True)
+    business_name = db.Column(db.String)
     username = db.Column(db.String)
     password = db.Column(db.String)
     hours = db.Column(db.String)
@@ -170,6 +171,7 @@ class Groomer(db.Model, SerializerMixin):
     def to_dict(self):
         return {
             'id': self.id,
+            'business_name': self.business_name,
             'username': self.username,
             'password': self.password,
             'hours': self.hours,
@@ -177,7 +179,7 @@ class Groomer(db.Model, SerializerMixin):
         }
     
     def __repr__(self):
-        return f'<Groomer id: {self.id}, username: {self.username}, password: {self.password}, hours: {self.hours}, address: {self.address}>'
+        return f'<Groomer id: {self.id}, business name: {self.business_name}, username: {self.username}, password: {self.password}, hours: {self.hours}, address: {self.address}>'
     
 
     @validates('username')
@@ -207,6 +209,12 @@ class Groomer(db.Model, SerializerMixin):
         if not isinstance(address, str):
             raise ValueError('Invalid address')
         return address
+    
+    @validates('business_name')
+    def validates_business_name(self, key, name):
+        if not isinstance(name, str):
+            raise ValueError('Invalid business name')
+        return name
 
 
 
@@ -248,6 +256,7 @@ class Appointment(db.Model, SerializerMixin):
     def validate_service(self, key, service):
         if not isinstance(service, str):
             raise ValueError('Invalid Service')
+        return service
 
     @validates('groomer_id')
     def validate_groomer_id(self, key, groomer_id):

@@ -43,11 +43,11 @@ with app.app_context():
     db.session.commit()
 
     # Add groomers
-    groomer1 = Groomer(username='Sydney', password='password', hours='9-5', address='123 Groomer Lane')
-    groomer2 = Groomer(username='Anna', password='password', hours='10-6', address='456 Groomer St')
-    groomer3 = Groomer(username='Brandon', password='password', hours='8-4', address='789 Groomer Blvd')
-    groomer4 = Groomer(username='Brant', password='password', hours='7-3', address='101 Groomer Ave')
-    groomer5 = Groomer(username='Ron', password='password', hours='11-7', address='202 Groomer Dr')
+    groomer1 = Groomer(business_name='Paws and Claws Grooming', username='pawsclaws123', password='password', hours='9-5', address='123 Groomer Lane')
+    groomer2 = Groomer(business_name='Furry Friends Salon', username='furryfriendsgroom', password='password', hours='10-6', address='456 Groomer St')
+    groomer3 = Groomer(business_name='Happy Tails Spa', username='happytailsspa', password='password', hours='8-4', address='789 Groomer Blvd')
+    groomer4 = Groomer(business_name='Snazzy Paws Boutique', username='snazzypaw', password='password', hours='7-3', address='101 Groomer Ave')
+    groomer5 = Groomer(business_name='Bark and Bathe', username='barkbathe', password='password', hours='11-7', address='202 Groomer Dr')
     db.session.add_all([groomer1, groomer2, groomer3, groomer4, groomer5])
     db.session.commit()
 

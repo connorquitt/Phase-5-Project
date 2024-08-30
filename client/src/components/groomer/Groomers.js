@@ -64,7 +64,7 @@ function Groomers() {
 
     return (
         <div className="groomers-container">
-            <h2>Welcome, {groomer.username}</h2>
+            <h2>Welcome, {groomer.business_name}</h2>
             <p><strong>Hours:</strong> {groomer.hours}</p>
 
             <h3>Appointments</h3>
