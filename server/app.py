@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from datetime import datetime
-from models import db, Owner, Pet, Worker, Groomer, GroomerPet, WorkerPet
+from models import db, Owner, Pet, Worker, Groomer, Appointment, WorkerPet
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -210,58 +210,59 @@ def groomer_by_id(id):
         }
         return make_response(response_body, 200)
 
-@app.route('/groomer_pets', methods=['GET', 'POST'])
-def groomer_pets():
+@app.route('/appointments', methods=['GET', 'POST'])
+def appointments():
     if request.method == 'GET':
-        groomer_pets = GroomerPet.query.all()
+        appointments = Appointment.query.all()
         return make_response(
-            jsonify([gp.to_dict() for gp in groomer_pets]), 200
+            jsonify([gp.to_dict() for gp in appointments]), 200
         )
     elif request.method == 'POST':
         data = request.get_json()
         try:
-            new_groomer_pet = GroomerPet(
+            new_appointment = Appointment(
                 appointment_time=data.get('appointment_time'),
+                service=data.get('service'),
                 groomer_id=data.get('groomer_id'),
                 pet_id=data.get('pet_id'),
             )
-            db.session.add(new_groomer_pet)
+            db.session.add(new_appointment)
             db.session.commit()
-            return make_response(new_groomer_pet.to_dict(), 201)
+            return make_response(new_appointment.to_dict(), 201)
         except Exception as e:
-            print(f"Error creating GroomerPets: {e}")
-            return make_response(jsonify({"error": "An error occurred while creating the appt"}), 500)
+            print(f"Error creating Appointment: {e}")
+            return make_response(jsonify({"error": "An error occurred while creating the appointment"}), 500)
 
 
 
-@app.route('/groomer_pets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def groomer_pet_by_id(id):
-    groomer_pet = GroomerPet.query.filter(GroomerPet.id == id).first()
+@app.route('/appointments/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def appointment_by_id(id):
+    appointment = Appointment.query.filter(Appointment.id == id).first()
 
-    if groomer_pet is None:
-        response_body = {"message": "GroomerPet not found in our database, please try again"}
+    if appointment is None:
+        response_body = {"message": "Appointment not found in our database, please try again"}
         return make_response(response_body, 404)
 
     if request.method == 'GET':
-        return make_response(groomer_pet.to_dict(), 200)
+        return make_response(appointment.to_dict(), 200)
     
     elif request.method == 'PATCH':
         data = request.get_json()
         if 'appointment_time' in data:
             appointment_time = datetime.fromtimestamp(data['appointment_time'])
-            groomer_pet.appointment_time = appointment_time
+            appointment.appointment_time = appointment_time
         for attr, value in data.items():
-            setattr(groomer_pet, attr, value)
-        db.session.add(groomer_pet)
+            setattr(appointment, attr, value)
+        db.session.add(appointment)
         db.session.commit()
-        return make_response(groomer_pet.to_dict(), 200)
+        return make_response(appointment.to_dict(), 200)
     
     elif request.method == 'DELETE':
-        db.session.delete(groomer_pet)
+        db.session.delete(appointment)
         db.session.commit()
         response_body = {
             "delete_successful": True,
-            "message": "GroomerPet deleted."
+            "message": "Appointment deleted."
         }
         return make_response(response_body, 200)
 

@@ -54,7 +54,7 @@ class Owner(db.Model, SerializerMixin):
 
 class Pet(db.Model, SerializerMixin):
     __tablename__ = 'pets'
-    serialize_rules = ('-groomer_pets.pets', '-worker_pets.pets',)
+    serialize_rules = ('-appointments.pets', '-worker_pets.pets',)
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -64,7 +64,7 @@ class Pet(db.Model, SerializerMixin):
 
     owner = db.relationship('Owner', back_populates='pets')
 
-    groomer_pets = db.relationship('GroomerPet', back_populates='pet')
+    appointments = db.relationship('Appointment', back_populates='pet')
     worker_pets = db.relationship('WorkerPet', back_populates='pet')
 
     def to_dict(self):
@@ -157,7 +157,7 @@ class Worker(db.Model, SerializerMixin):
 
 class Groomer(db.Model, SerializerMixin):
     __tablename__ = 'groomers'
-    serialize_rules = ('-groomer_pets.groomers',)
+    serialize_rules = ('-appointments.groomers',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String)
@@ -165,7 +165,7 @@ class Groomer(db.Model, SerializerMixin):
     hours = db.Column(db.String)
     address = db.Column(db.String)
 
-    groomer_pets = db.relationship('GroomerPet', back_populates='groomer')
+    appointments = db.relationship('Appointment', back_populates='groomer')
 
     def to_dict(self):
         return {
@@ -210,23 +210,24 @@ class Groomer(db.Model, SerializerMixin):
 
 
 
-class GroomerPet(db.Model, SerializerMixin):
-    __tablename__ = 'groomer_pets'
-    serialize_rules = ('-groomers.groomer_pets', '-pets.groomer_pets',)
+class Appointment(db.Model, SerializerMixin):
+    __tablename__ = 'appointments'
+    serialize_rules = ('-groomers.appointments', '-pets.appointments',)
 
     id = db.Column(db.Integer, primary_key=True)
-    appointment_time = db.Column(db.String) #datetime type thing needed
+    appointment_time = db.Column(db.String) #FIX
+    service = db.Column(db.String)
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
 
-    groomer = db.relationship('Groomer', back_populates='groomer_pets') 
-    pet = db.relationship('Pet', back_populates='groomer_pets') #would like GroomerPet.pet to show the appt time and info as well as the pet
-
+    groomer = db.relationship('Groomer', back_populates='appointments') 
+    pet = db.relationship('Pet', back_populates='appointments')
     def to_dict(self):
         return {
             'id': self.id,
-            'appointment_time': self.appointment_time, #when adding a Groomer_pet instance without appointment_time it will crash
-            'groomer_id': self.groomer_id, #when adding a GroomerPet instance without groomer_id it will crash
+            'appointment_time': self.appointment_time, #when adding an Appointment instance without appointment_time it will crash
+            'service': self.service,
+            'groomer_id': self.groomer_id, #when adding a Appointment instance without groomer_id it will crash
             'pet_id': self.pet_id,
 
             'groomer': self.groomer.username,
@@ -234,7 +235,7 @@ class GroomerPet(db.Model, SerializerMixin):
         }
     
     def __repr__(self):
-        return f'<GroomerPets id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}>'
+        return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, service: {self.service}>'
     
 
     #@validates('appointment_time')
@@ -242,6 +243,11 @@ class GroomerPet(db.Model, SerializerMixin):
     #    if not isinstance(appointment_time, str):
     #        raise ValueError('Invalid appointment time')
     #    return appointment_time
+
+    @validates('service')
+    def validate_service(self, key, service):
+        if not isinstance(service, str):
+            raise ValueError('Invalid Service')
 
     @validates('groomer_id')
     def validate_groomer_id(self, key, groomer_id):

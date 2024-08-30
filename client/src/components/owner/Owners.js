@@ -1,10 +1,3 @@
-// Owners.js
-//on dog cards have buttons that take you to the page to create job listings for walks and stuff
-//when you post a job give the job card a visual way of seeing if its been claimed, also give job cards a way to claim them from perspective of a worker or way
-//deny anyone who isn't certified with the boolean the worker model has
-    //top of the owner screen have a post a job listing, after posting a small bar will show up underneath the user submittable stuff that shows very minimal
-    //details as well as an emoji or letting the whole bar change color when it gets picked up/fufilled
-
 
     import React, { useContext, useEffect, useState } from 'react';
     import { NavLink } from 'react-router-dom';
@@ -286,7 +279,7 @@
         
                 console.log("Sending appointment request:", requestData); // Debugging log
         
-                fetch('/groomer_pets', {
+                fetch('/appointments', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

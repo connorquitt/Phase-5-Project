@@ -1,3 +1,4 @@
+//add services to creating grooming appt
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.js';
 import PetMoreInfo from '../owner/PetMoreInfo';
@@ -11,7 +12,7 @@ function Groomers() {
     const groomer = context.currentUser;
 
     useEffect(() => {
-        fetch('/groomer_pets')
+        fetch('/appointments')
             .then((res) => res.json())
             .then((res) => {
                 // Filter appointments to show only those for the current groomer
@@ -31,7 +32,7 @@ function Groomers() {
     }
 
     function handleDelete(appointmentId) {
-        fetch(`/groomer_pets/${appointmentId}`, {
+        fetch(`/appointments/${appointmentId}`, {
             method: 'DELETE',
         })
         .then((res) => {

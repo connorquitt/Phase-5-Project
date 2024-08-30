@@ -1,12 +1,12 @@
 import datetime
 from app import app
-from models import db, Owner, Pet, Worker, Groomer, GroomerPet, WorkerPet
+from models import db, Owner, Pet, Worker, Groomer, Appointment, WorkerPet
 
 with app.app_context():
 
     # Delete all rows in tables
     WorkerPet.query.delete()
-    GroomerPet.query.delete()
+    Appointment.query.delete()
     Groomer.query.delete()
     Worker.query.delete()
     Pet.query.delete()
@@ -52,11 +52,11 @@ with app.app_context():
     db.session.commit()
 
     # Add groomer-pet appointments
-    gp1 = GroomerPet(appointment_time=int(datetime.datetime(2024, 8, 20, 14, 0).timestamp()), groomer=groomer1, pet=pet1)
-    gp2 = GroomerPet(appointment_time=int(datetime.datetime(2024, 8, 21, 10, 0).timestamp()), groomer=groomer2, pet=pet2)
-    gp3 = GroomerPet(appointment_time=int(datetime.datetime(2024, 8, 22, 11, 0).timestamp()), groomer=groomer3, pet=pet3)
-    gp4 = GroomerPet(appointment_time=int(datetime.datetime(2024, 8, 23, 12, 0).timestamp()), groomer=groomer4, pet=pet4)
-    gp5 = GroomerPet(appointment_time=int(datetime.datetime(2024, 8, 24, 15, 0).timestamp()), groomer=groomer5, pet=pet5)
+    gp1 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 20, 14, 0).timestamp()), service='Cleaning', groomer=groomer1, pet=pet1)
+    gp2 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 21, 10, 0).timestamp()), service='Nail Clipping', groomer=groomer2, pet=pet2)
+    gp3 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 22, 11, 0).timestamp()), service='Cleaning', groomer=groomer3, pet=pet3)
+    gp4 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 23, 12, 0).timestamp()), service='Nail Clipping', groomer=groomer4, pet=pet4)
+    gp5 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 24, 15, 0).timestamp()), service='Cleaning', groomer=groomer5, pet=pet5)
     db.session.add_all([gp1, gp2, gp3, gp4, gp5])
     db.session.commit()
 
