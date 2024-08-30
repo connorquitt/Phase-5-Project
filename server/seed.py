@@ -52,12 +52,12 @@ with app.app_context():
     db.session.commit()
 
     # Add groomer-pet appointments
-    gp1 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 20, 14, 0).timestamp()), service='Cleaning', groomer=groomer1, pet=pet1)
-    gp2 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 21, 10, 0).timestamp()), service='Nail Clipping', groomer=groomer2, pet=pet2)
-    gp3 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 22, 11, 0).timestamp()), service='Cleaning', groomer=groomer3, pet=pet3)
-    gp4 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 23, 12, 0).timestamp()), service='Nail Clipping', groomer=groomer4, pet=pet4)
-    gp5 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 24, 15, 0).timestamp()), service='Cleaning', groomer=groomer5, pet=pet5)
-    db.session.add_all([gp1, gp2, gp3, gp4, gp5])
+    appt1 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 20, 14, 0).timestamp()), service='Cleaning', groomer=groomer1, pet=pet1)
+    appt2 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 21, 10, 0).timestamp()), service='Nail Clipping', groomer=groomer2, pet=pet2)
+    appt3 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 22, 11, 0).timestamp()), service='Cleaning', groomer=groomer3, pet=pet3)
+    appt4 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 23, 12, 0).timestamp()), service='Nail Clipping', groomer=groomer4, pet=pet4)
+    appt5 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 24, 15, 0).timestamp()), service='Cleaning', groomer=groomer5, pet=pet5)
+    db.session.add_all([appt1, appt2, appt3, appt4, appt5])
     db.session.commit()
 
     # Add worker-pet appointments

@@ -272,7 +272,7 @@ def jobs():
     if request.method == 'GET':
         jobs = Job.query.all()
         return make_response(
-            jsonify([wp.to_dict() for wp in jobs]), 200
+            jsonify([job.to_dict() for job in jobs]), 200
         )
     
     elif request.method == 'POST':

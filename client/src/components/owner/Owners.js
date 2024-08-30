@@ -1,6 +1,5 @@
 
     import React, { useContext, useEffect, useState } from 'react';
-    import { NavLink } from 'react-router-dom';
     import { UserContext } from '../App.js';
     import PetCard from './PetCard';
     
@@ -83,7 +82,6 @@
         };
     
         const CreateListing = () => {
-            // Initialize state variables
             const [notes, setNotes] = useState('');
             const [jobType, setJobType] = useState('');
             const [selectedPet, setSelectedPet] = useState('');
@@ -95,7 +93,7 @@
                 const requestData = {
                     arrival_time: parseInt(time),
                     owner_id: user.id,
-                    worker_id: 1, // Replace with actual worker ID if needed
+                    worker_id: 1,
                     pet_id: selectedPet,
                     job_type: jobType,
                 };
@@ -116,10 +114,8 @@
                     return res.json();
                 })
                 .then(res => {
-                    // Update jobs state and clear form fields
                     setJobs(prevJobs => [...prevJobs, res]);
         
-                    // Clear the form fields
                     setJobType('');
                     setSelectedPet('');
                     setNotes('');
@@ -276,7 +272,7 @@
                     groomer_id: parseInt(selectedGroomer),
                     pet_id: parseInt(selectedPet),
                     service: service,
-                    appointment_time: appointmentTime  // Ensure this is in the format the backend expects
+                    appointment_time: appointmentTime  //fix this
                 };
         
                 console.log("Sending appointment request:", requestData); // Debugging log
@@ -369,18 +365,6 @@
         }
         
 
-
-    
-        const Navbar = () => {
-            return (
-                <nav className='navbar'>
-                    <NavLink to='/groomers'>Groomers</NavLink>
-                    <NavLink to='/jobs'>Job Listings</NavLink>
-                    <NavLink to='/login'>Logout</NavLink>
-                </nav>
-            )
-        }
-    
         const MyJobs = () => {
             if (!jobs.length) {
                 return <h2>Loading jobs...</h2>;
@@ -403,7 +387,6 @@
                                     <strong>Arrival Time:</strong> {job.arrival_time}<br />
                                     <strong>Worker:</strong> {job.worker ? job.worker : 'none'}
                                     <button onClick={() => deleteJob(job.id)} className="delete-button">Delete</button>
-                                    {/* Add other relevant job details */}
                                 </li>
                             ))}
                         </ul>
@@ -414,7 +397,6 @@
     
         return (
             <div className="main-container">
-                <Navbar />
                 <h2>Owners Dashboard</h2>
                 <div className="forms-container">
                     <CreateListing />
