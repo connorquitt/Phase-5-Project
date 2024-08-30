@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from datetime import datetime
-from models import db, Owner, Pet, Worker, Groomer, Appointment, WorkerPet
+from models import db, Owner, Pet, Worker, Groomer, Appointment, Job
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -266,12 +266,12 @@ def appointment_by_id(id):
         }
         return make_response(response_body, 200)
 
-@app.route('/worker_pets', methods=['GET', 'POST'])
-def worker_pets():
+@app.route('/jobs', methods=['GET', 'POST'])
+def jobs():
     if request.method == 'GET':
-        worker_pets = WorkerPet.query.all()
+        jobs = Job.query.all()
         return make_response(
-            jsonify([wp.to_dict() for wp in worker_pets]), 200
+            jsonify([wp.to_dict() for wp in jobs]), 200
         )
     
     elif request.method == 'POST':
@@ -293,51 +293,51 @@ def worker_pets():
         if missing_fields:
             return make_response(jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400)
         
-        # Create new WorkerPet record
+        # Create new Job record
         try:
-            new_worker_pet = WorkerPet(
+            new_job = Job(
                 arrival_time=arrival_time,
                 worker_id=data.get('worker_id'),
                 pet_id=data.get('pet_id'),
                 owner_id=data.get('owner_id'),
                 job_type=data.get('job_type'),
             )
-            db.session.add(new_worker_pet)
+            db.session.add(new_job)
             db.session.commit()
-            return make_response(new_worker_pet.to_dict(), 201)
+            return make_response(new_job.to_dict(), 201)
         except Exception as e:
             # Log any exception that occurs
-            print(f"Error creating WorkerPet: {e}")
+            print(f"Error creating Job: {e}")
             return make_response(jsonify({"error": "An error occurred while creating the job"}), 500)
 
-@app.route('/worker_pets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def worker_pet_by_id(id):
-    worker_pet = WorkerPet.query.filter(WorkerPet.id == id).first()
+@app.route('/jobs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def job_by_id(id):
+    job = Job.query.filter(Job.id == id).first()
 
-    if worker_pet is None:
-        response_body = {"message": "WorkerPet not found in our database, please try again"}
+    if job is None:
+        response_body = {"message": "Job not found in our database, please try again"}
         return make_response(response_body, 404)
 
     if request.method == 'GET':
-        return make_response(worker_pet.to_dict(), 200)
+        return make_response(job.to_dict(), 200)
     
     elif request.method == 'PATCH':
         data = request.get_json()
         if 'arrival_time' in data:
             arrival_time = datetime.fromtimestamp(data['arrival_time'])
-            worker_pet.arrival_time = arrival_time
+            job.arrival_time = arrival_time
         for attr, value in data.items():
-            setattr(worker_pet, attr, value)
-        db.session.add(worker_pet)
+            setattr(job, attr, value)
+        db.session.add(job)
         db.session.commit()
-        return make_response(worker_pet.to_dict(), 200)
+        return make_response(job.to_dict(), 200)
     
     elif request.method == 'DELETE':
-        db.session.delete(worker_pet)
+        db.session.delete(job)
         db.session.commit()
         response_body = {
             "delete_successful": True,
-            "message": "WorkerPet deleted."
+            "message": "Job deleted."
         }
         return make_response(response_body, 200)
 

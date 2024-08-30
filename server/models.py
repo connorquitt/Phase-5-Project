@@ -17,7 +17,7 @@ class Owner(db.Model, SerializerMixin):
     password = db.Column(db.String)
 
     pets = db.relationship('Pet', back_populates='owner')
-    worker_pets = db.relationship('WorkerPet', back_populates='owner')
+    jobs = db.relationship('Job', back_populates='owner')
 
 
     def to_dict(self):
@@ -26,7 +26,7 @@ class Owner(db.Model, SerializerMixin):
             'username': self.username,
             'password': self.password,
             'pets': [pet.to_dict() for pet in self.pets],
-            'worker_pets': [worker_pet.to_dict() for worker_pet in self.worker_pets],
+            'jobs': [job.to_dict() for job in self.jobs],
 
         }
     
@@ -54,7 +54,7 @@ class Owner(db.Model, SerializerMixin):
 
 class Pet(db.Model, SerializerMixin):
     __tablename__ = 'pets'
-    serialize_rules = ('-appointments.pets', '-worker_pets.pets',)
+    serialize_rules = ('-appointments.pets', '-jobs.pets',)
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -65,7 +65,7 @@ class Pet(db.Model, SerializerMixin):
     owner = db.relationship('Owner', back_populates='pets')
 
     appointments = db.relationship('Appointment', back_populates='pet')
-    worker_pets = db.relationship('WorkerPet', back_populates='pet')
+    jobs = db.relationship('Job', back_populates='pet')
 
     def to_dict(self):
         return {
@@ -102,7 +102,7 @@ class Pet(db.Model, SerializerMixin):
 
 class Worker(db.Model, SerializerMixin):
     __tablename__ = 'workers'
-    serialize_rules = ('-worker_pets.workers',)
+    serialize_rules = ('-jobs.workers',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String)
@@ -110,7 +110,7 @@ class Worker(db.Model, SerializerMixin):
     pet_walker = db.Column(db.Boolean)
     pet_sitter = db.Column(db.Boolean)
 
-    worker_pets = db.relationship('WorkerPet', back_populates='worker')
+    jobs = db.relationship('Job', back_populates='worker')
 
     def to_dict(self):
         return {
@@ -263,38 +263,38 @@ class Appointment(db.Model, SerializerMixin):
 
 
 
-class WorkerPet(db.Model, SerializerMixin):
-    __tablename__ = 'worker_pets'
+class Job(db.Model, SerializerMixin):
+    __tablename__ = 'jobs'
 
     id = db.Column(db.Integer, primary_key=True)
-    arrival_time = db.Column(db.String) #datetime type thing needed
+    arrival_time = db.Column(db.String) #FIX
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
     job_type = db.Column(db.String)
 
-    worker = db.relationship('Worker', back_populates='worker_pets')
-    pet = db.relationship('Pet', back_populates='worker_pets') #would like WorkerPet.pet to show more info than just the pet
-    owner = db.relationship('Owner', back_populates='worker_pets')
+    worker = db.relationship('Worker', back_populates='jobs')
+    pet = db.relationship('Pet', back_populates='jobs') #would like Job.pet to show more info than just the pet
+    owner = db.relationship('Owner', back_populates='jobs')
 
 
     def to_dict(self):
         return {
             'id': self.id,
-            'arrival_time': self.arrival_time, #when adding a WorkerPet instance without an arrival_time it will crash
+            'arrival_time': self.arrival_time, #when adding a Job instance without an arrival_time it will crash
             'worker_id': self.worker_id,
             'pet_id': self.pet_id,
             'owner_id': self.owner_id,
             'job_type': self.job_type,
 
 
-            'worker': self.worker.username, #when adding a WorkerPet instance without a worker_id it will crash
-            'pet': self.pet.name, #when adding a WorkerPet instance without a pet_id it will crash
+            'worker': self.worker.username, #when adding a Job instance without a worker_id it will crash
+            'pet': self.pet.name, #when adding a Job instance without a pet_id it will crash
             
         }
 
     def __repr__(self):
-        return f'<WorkerPet id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}>'
+        return f'<Job id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}>'
     
 
     #@validates('arrival_time')

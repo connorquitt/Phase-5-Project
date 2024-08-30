@@ -20,7 +20,7 @@
         }, []);
     
         useEffect(() => {
-            fetch('/worker_pets')
+            fetch('/jobs')
                 .then(res => res.json())
                 .then(res => setJobs(res));
         }, []);
@@ -47,7 +47,7 @@
         };
     
         const deleteJob = (jobId) => {
-            fetch(`/worker_pets/${jobId}`, {
+            fetch(`/jobs/${jobId}`, {
                 method: 'DELETE',
             })
             .then(res => {
@@ -102,7 +102,7 @@
 
                 console.log('running')
         
-                fetch('/worker_pets', {
+                fetch('/jobs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -355,7 +355,7 @@
             return (
                 <nav className='navbar'>
                     <NavLink to='/groomers'>Groomers</NavLink>
-                    <NavLink to='/workerpets'>Job Listings</NavLink>
+                    <NavLink to='/jobs'>Job Listings</NavLink>
                     <NavLink to='/login'>Logout</NavLink>
                 </nav>
             )

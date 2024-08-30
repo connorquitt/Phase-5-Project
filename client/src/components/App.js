@@ -14,7 +14,7 @@ function App() {
         return (
             <nav className='navbar'>
                 <NavLink to='/groomers'>Groomers</NavLink>
-                <NavLink to='/workerpets'>Job Listings</NavLink>
+                <NavLink to='/jobs'>Job Listings</NavLink>
                 <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
             </nav>
         )

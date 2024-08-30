@@ -1,11 +1,11 @@
 import datetime
 from app import app
-from models import db, Owner, Pet, Worker, Groomer, Appointment, WorkerPet
+from models import db, Owner, Pet, Worker, Groomer, Appointment, Job
 
 with app.app_context():
 
     # Delete all rows in tables
-    WorkerPet.query.delete()
+    Job.query.delete()
     Appointment.query.delete()
     Groomer.query.delete()
     Worker.query.delete()
@@ -61,10 +61,10 @@ with app.app_context():
     db.session.commit()
 
     # Add worker-pet appointments
-    wp1 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=unclaimed, pet=pet1, job_type='pet_walker')
-    wp2 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker')
-    wp3 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=worker3, pet=pet3, job_type='pet_walker')
-    wp4 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker4, pet=pet4, job_type='pet_sitter')
-    wp5 = WorkerPet(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5, job_type='pet_sitter')
-    db.session.add_all([wp1, wp2, wp3, wp4, wp5])
+    job1 = Job(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=unclaimed, pet=pet1, job_type='pet_walker')
+    job2 = Job(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker')
+    job3 = Job(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=worker3, pet=pet3, job_type='pet_walker')
+    job4 = Job(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker4, pet=pet4, job_type='pet_sitter')
+    job5 = Job(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5, job_type='pet_sitter')
+    db.session.add_all([job1, job2, job3, job4, job5])
     db.session.commit()

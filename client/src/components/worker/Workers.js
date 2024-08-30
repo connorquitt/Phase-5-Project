@@ -11,7 +11,7 @@ function Worker() {
     const [showPreferences, setShowPreferences] = useState(false);
 
     useEffect(() => {
-        fetch('/worker_pets')
+        fetch('/jobs')
             .then(res => res.json())
             .then(res => {
                 console.log(res);
@@ -33,7 +33,7 @@ function Worker() {
             worker_id: user.id,
         };
 
-        fetch(`/worker_pets/${jobId}`, {
+        fetch(`/jobs/${jobId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ function Worker() {
             worker_id: 1,
         };
 
-        fetch(`/worker_pets/${jobId}`, {
+        fetch(`/jobs/${jobId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
