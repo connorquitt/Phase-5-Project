@@ -227,9 +227,11 @@ class Appointment(db.Model, SerializerMixin):
     service = db.Column(db.String)
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
+    owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
 
     groomer = db.relationship('Groomer', back_populates='appointments') 
     pet = db.relationship('Pet', back_populates='appointments')
+    owner = db.relationship('Owner', back_populates='appointments')
     def to_dict(self):
         return {
             'id': self.id,
@@ -237,13 +239,15 @@ class Appointment(db.Model, SerializerMixin):
             'service': self.service,
             'groomer_id': self.groomer_id, #when adding a Appointment instance without groomer_id it will crash
             'pet_id': self.pet_id,
+            'owner_id': self.owner_id,
 
             'groomer': self.groomer.username,
             'pet': self.pet.name,
+            'owner': self.owner.username,
         }
     
     def __repr__(self):
-        return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, service: {self.service}>'
+        return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, owner: {self.owner}, service: {self.service}>'
     
 
     #@validates('appointment_time')

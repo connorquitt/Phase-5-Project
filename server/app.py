@@ -226,6 +226,7 @@ def appointments():
                 service=data.get('service'),
                 groomer_id=data.get('groomer_id'),
                 pet_id=data.get('pet_id'),
+                owner_id=data.get('owner_id')
             )
             db.session.add(new_appointment)
             db.session.commit()

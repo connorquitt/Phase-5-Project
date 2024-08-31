@@ -1,421 +1,118 @@
+// src/components/Owners.js
 
-    import React, { useContext, useEffect, useState } from 'react';
-    import { UserContext } from '../App.js';
-    import PetCard from './PetCard';
-    
-    function Owners() {
-        const context = useContext(UserContext);
+import React, { useContext, useEffect, useState } from 'react';
+import { UserContext } from '../App.js';
+import PetCard from './PetCard';
+import DogCards from './DogCards';
+import MyJobs from './MyJobs';
+import CreateListing from './CreateListing';
+import CreatePet from './CreatePet';
+import BookGroomingAppt from './BookGrooming.js';
 
-        const [pets, setPets] = useState([]);
-        const [jobs, setJobs] = useState([]);
-        const [groomers, setGroomers] = useState([]);
+function Owners() {
+    const context = useContext(UserContext);
     
-        const user = context.currentUser;
-    
-        useEffect(() => {
-            fetch('/pets')
-                .then((res) => res.json())
-                .then((res) => setPets(res));
-        }, []);
-    
-        useEffect(() => {
-            fetch('/jobs')
-                .then(res => res.json())
-                .then(res => setJobs(res));
-        }, []);
+    const [pets, setPets] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [groomers, setGroomers] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const user = context.currentUser;
 
-        useEffect(() => {
-            fetch('/groomers')
-                .then(res => res.json())
-                .then(res => setGroomers(res))
-        }, []);
-    
-        const deletePet = (petId) => {
-            fetch(`/pets/${petId}`, {
-                method: 'DELETE',
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Failed to delete pet');
-                }
-                setPets(prevPets => prevPets.filter(pet => pet.id !== petId));
-            })
-            .catch(error => {
-                console.error('Error deleting pet:', error);
-            });
-        };
-    
-        const deleteJob = (jobId) => {
-            fetch(`/jobs/${jobId}`, {
-                method: 'DELETE',
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Failed to delete job');
-                }
-                setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
-            })
-            .catch(error => {
-                console.error('Error deleting job:', error);
-            });
-        };
-    
-        const DogCards = () => {
-            if (!pets.length) {
-                return <h2>Loading pets...</h2>;
-            } else {
-                return (
-                    <div className="dog-cards-container">
-                        {pets.map((pet) => {
-                            if (pet && pet.owner === user.username) {
-                                return (
-                                    <div key={pet.id} className="pet-card-container">
-                                        <PetCard pet={pet} onDelete={deletePet} onEdit={updatePet}/>
-                                    </div>
-                                );
-                            }
-                            return null;
-                        })}
-                    </div>
-                );
+    useEffect(() => {
+        fetch('/pets')
+            .then((res) => res.json())
+            .then((res) => setPets(res));
+    }, []);
+
+    useEffect(() => {
+        fetch('/jobs')
+            .then(res => res.json())
+            .then(res => setJobs(res));
+    }, []);
+
+    useEffect(() => {
+        fetch('/groomers')
+            .then(res => res.json())
+            .then(res => setGroomers(res))
+    }, []);
+
+    useEffect(() => {
+        fetch('/appointments')
+            .then(res => res.json())
+            .then(res => filterAppts(res))
+    }, [])
+
+    const deletePet = (petId) => {
+        fetch(`/pets/${petId}`, {
+            method: 'DELETE',
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to delete pet');
             }
-        };
-    
-        const CreateListing = () => {
-            const [notes, setNotes] = useState('');
-            const [jobType, setJobType] = useState('');
-            const [selectedPet, setSelectedPet] = useState('');
-            const [time, setTime] = useState('');
-        
-            const handleAddListing = (e) => {
-                e.preventDefault();
-        
-                const requestData = {
-                    arrival_time: parseInt(time),
-                    owner_id: user.id,
-                    worker_id: 1,
-                    pet_id: selectedPet,
-                    job_type: jobType,
-                };
+            setPets(prevPets => prevPets.filter(pet => pet.id !== petId));
+        })
+        .catch(error => {
+            console.error('Error deleting pet:', error);
+        });
+    };
 
-                console.log('running')
-        
-                fetch('/jobs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData),
-                })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.json();
-                })
-                .then(res => {
-                    setJobs(prevJobs => [...prevJobs, res]);
-        
-                    setJobType('');
-                    setSelectedPet('');
-                    setNotes('');
-                    setTime('');
-                })
-                .catch(error => {
-                    console.error('Error adding job:', error);
-                });
-            };
-        
-            return (
-                <div className="create-listing-container">
-                    <h3>Create a New Job Listing</h3>
-                    <form onSubmit={handleAddListing}>
-                        <label>
-                            Job Type:
-                            <select 
-                                value={jobType}
-                                onChange={(e) => setJobType(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="">Select...</option>
-                                <option value="pet_walker">Walker</option>
-                                <option value="pet_sitter">Sitter</option>
-                            </select>
-                        </label>
-                        <label>
-                            Select Pet:
-                            <select
-                                value={selectedPet}
-                                onChange={(e) => setSelectedPet(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="">Select...</option>
-                                {context.currentUser.pets.map((pet) => (
-                                    <option value={pet.id} key={pet.id}>{pet.name}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label>
-                            Additional Notes:
-                            <input 
-                                type='text'
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <label>
-                            Select Date:
-                            <input
-                                id='hire_date'
-                                type="datetime-local"
-                                placeholder="Hire Date"
-                                value={time}
-                                onChange={(e) => setTime(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <button type="submit" className="form-submit-button">Submit</button>
-                    </form>
-                </div>
-            );
-        }
-        
-        const CreatePet = () => {
-            const [petName, setPetName] = useState('');
-            const [breed, setBreed] = useState('');
-            const [age, setAge] = useState('');
-    
-            const handleAddPet = (e) => {
-                e.preventDefault();
-    
-                const requestData = {
-                    name: petName,
-                    breed: breed,
-                    age: parseInt(age),
-                    owner_id: user.id,
-                };
-    
-                fetch('/pets', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData),
-                })
-                .then(res => res.json())
-                .then(res => {
-                    console.log('Pet added:', res);
-                    setPets(prevPets => [...prevPets, res]);
-                    setPetName('');
-                    setBreed('');
-                    setAge('');
-                })
-                .catch(error => {
-                    console.error('Error adding pet:', error);
-                });
-            };
-    
-            return (
-                <div className="create-pet-container">
-                    <h3>Add a New Pet</h3>
-                    <form onSubmit={handleAddPet}>
-                        <label>
-                            Pet Name:
-                            <input 
-                                type='text'
-                                value={petName}
-                                onChange={(e) => setPetName(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <label>
-                            Breed:
-                            <input 
-                                type='text'
-                                value={breed}
-                                onChange={(e) => setBreed(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <label>
-                            Age:
-                            <input 
-                                type='number'
-                                value={age}
-                                onChange={(e) => setAge(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <button type="submit" className="form-submit-button">Submit</button>
-                    </form>
-                </div>
-            );
-        }
-
-        const updatePet = (updatedPet) => {
-            setPets(prevPets => prevPets.map(pet => pet.id === updatedPet.id ? updatedPet : pet));
-        };
-
-
-
-        function BookGroomingAppt() {
-            const [selectedGroomer, setSelectedGroomer] = useState('');
-            const [selectedPet, setSelectedPet] = useState('');
-            const [appointmentTime, setAppointmentTime] = useState('');
-            const [service, setService] = useState('');
-        
-            const handleBookAppointment = (e) => {
-                e.preventDefault();
-        
-                const requestData = {
-                    groomer_id: parseInt(selectedGroomer),
-                    pet_id: parseInt(selectedPet),
-                    service: service,
-                    appointment_time: appointmentTime  //fix this
-                };
-        
-                console.log("Sending appointment request:", requestData); // Debugging log
-        
-                fetch('/appointments', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData),
-                })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Failed to book appointment');
-                    }
-                    return res.json();
-                })
-                .then(res => {
-                    console.log("Appointment booked successfully:", res);
-                    setSelectedGroomer('');
-                    setSelectedPet('');
-                    setAppointmentTime('');
-                    setService('');
-
-                })
-                .catch(error => {
-                    console.error('Error booking appointment:', error);
-                });
-            };
-        
-            return (
-                <div className="book-grooming-container">
-                    <h3>Book Grooming Appointment</h3>
-                    <form onSubmit={handleBookAppointment}>
-                        <label>
-                            Select Grooming Service:
-                            <select 
-                                value={selectedGroomer}
-                                onChange={(e) => setSelectedGroomer(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="">Select...</option>
-                                {groomers.map((groomer) => (
-                                    <option key={groomer.id} value={groomer.id}>{groomer.business_name}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label>
-                            Select Pet:
-                            <select
-                                value={selectedPet}
-                                onChange={(e) => setSelectedPet(e.target.value)}
-                                className="form-select"
-                            >
-                                <option value="">Select...</option>
-                                {user.pets.map((pet) => (
-                                    <option value={pet.id} key={pet.id}>{pet.name}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label>
-                            Select Service:
-                            <select
-                                value={service}
-                                onChange={(e) => setService(e.target.value)}
-                                className='form-select'
-                            >
-                                <option value=''>Select...</option>
-                                <option value='Bathe and Dry'>Bath and Blow-Dry</option>
-                                <option value='Styling'>Styling</option>
-                                <option value='Deshedding'>Deshedding Treatment</option>
-                                <option value='Nail Trim'>Nail Trim</option>
-                                <option value='Ear Cleaning'>Ear Cleaning</option>
-                                <option value='Tick Treatment'>Flea and Tick Treatment</option>
-                            </select>
-                        </label>
-                        <label>
-                            Appointment Time:
-                            <input
-                                type="datetime-local"
-                                value={appointmentTime}
-                                onChange={(e) => setAppointmentTime(e.target.value)}
-                                className="form-input"
-                            />
-                        </label>
-                        <button type="submit" className="form-submit-button">Book Appointment</button>
-                    </form>
-                </div>
-            );
-        }
-        
-
-        const MyJobs = () => {
-            if (!jobs.length) {
-                return <h2>Loading jobs...</h2>;
+    const filterAppts = (appointments) => {
+        const filteredAppts = appointments.map((appointment) => {
+            if (appointment.petId == user.petId) {
+                console.log('fail:', {appointment})
+            }else {
+                console.log('else:', {appointment})
             }
-    
-            const userPetIds = new Set(context.currentUser.pets.map(pet => pet.id));
-    
-            const filteredJobs = jobs.filter(job => userPetIds.has(job.pet_id));
-    
-            return (
-                <div>
-                    {filteredJobs.length === 0 ? (
-                        <p>No jobs found for your pets.</p>
-                    ) : (
-                        <ul>
-                            {filteredJobs.map(job => (
-                                <li key={job.id} className='card'>
-                                    <strong>Job Type:</strong> {job.job_type}<br />
-                                    <strong>Pet:</strong> {job.pet}<br />
-                                    <strong>Arrival Time:</strong> {job.arrival_time}<br />
-                                    <strong>Worker:</strong> {job.worker ? job.worker : 'none'}
-                                    <button onClick={() => deleteJob(job.id)} className="delete-button">Delete</button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            );
-        };
-    
-        return (
-            <div className="main-container">
-                <h2>Owners Dashboard</h2>
-                <div className="forms-container">
-                    <CreateListing />
-                    <CreatePet />
-                    <BookGroomingAppt />
-                </div>
-                <DogCards />
-                <MyJobs />
-            </div>
-        );
+        })
     }
-    
-    export default Owners;
-    
 
-    
-    
-    //add cards for pets owned by the current owner logged in
-    //add more info cards for pets to use dog API
-    //add the listings created by them to their page with a way to show if they've been picked up
-    //allow job listings to be editable
-    //button on more info to book grooming visit and takes them to the grooming page with the selected dog aleady saved (use useContext for that)
+    const deleteJob = (jobId) => {
+        fetch(`/jobs/${jobId}`, {
+            method: 'DELETE',
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to delete job');
+            }
+            setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+        })
+        .catch(error => {
+            console.error('Error deleting job:', error);
+        });
+    };
+
+    const updatePet = (updatedPet) => {
+        setPets(prevPets => prevPets.map(pet => pet.id === updatedPet.id ? updatedPet : pet));
+    };
+
+    const handleDeleteAppointment = (appointmentId) => {
+        fetch(`/appointments/${appointmentId}`, { // Replace with your actual endpoint
+          method: 'DELETE',
+        })
+          .then(response => {
+            if (response.ok) {
+              setAppointments(appointments.filter(appointment => appointment.id !== appointmentId));
+            } else {
+              console.error('Failed to delete the appointment');
+            }
+          })
+          .catch(error => console.error('Error deleting appointment:', error));
+      };
+
+    return (
+        <div className="main-container">
+            <h2>Owners Dashboard</h2>
+            <div className="forms-container">
+                <CreateListing user={user} setJobs={setJobs} />
+                <CreatePet user={user} setPets={setPets} />
+                <BookGroomingAppt groomers={groomers} user={user} />
+            </div>
+            <DogCards pets={pets} user={user} deletePet={deletePet} updatePet={updatePet} />
+            <MyJobs jobs={jobs} user={user} deleteJob={deleteJob} />
+
+        </div>
+    );
+}
+
+export default Owners;
