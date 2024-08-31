@@ -41,7 +41,6 @@ function PetCard({ pet, onEdit }) {
 
     const handleMoreInfoClick = (e) => {
         setIsMoreInfo(!isMoreInfo); // Toggle the more info view
-        //return <MakePetCard PetBreed={pet.breed}/>
     };
 
     return (

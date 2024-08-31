@@ -224,6 +224,7 @@ def appointments():
             new_appointment = Appointment(
                 appointment_time=data.get('appointment_time'),
                 service=data.get('service'),
+                isCompleted=data.get('isCompleted'),
                 groomer_id=data.get('groomer_id'),
                 pet_id=data.get('pet_id'),
                 owner_id=data.get('owner_id')
@@ -278,18 +279,14 @@ def jobs():
     
     elif request.method == 'POST':
         data = request.get_json()
-        
-        # Log incoming data for debugging
-        print(f"Received data: {data}")
-        
-        # Ensure arrival_time is converted to an integer
+
         try:
             arrival_time = datetime.fromtimestamp(int(data.get('arrival_time')))
         except (TypeError, ValueError) as e:
             return make_response(jsonify({"error": f"Invalid arrival_time format: {e}"}), 400)
         
         # Ensure all necessary data is present
-        required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type']
+        required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type', 'isCompleted']
         missing_fields = [field for field in required_fields if data.get(field) is None]
         
         if missing_fields:
@@ -299,6 +296,7 @@ def jobs():
         try:
             new_job = Job(
                 arrival_time=arrival_time,
+                isCompleted=data.get('isCompleted'),
                 worker_id=data.get('worker_id'),
                 pet_id=data.get('pet_id'),
                 owner_id=data.get('owner_id'),

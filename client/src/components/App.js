@@ -13,8 +13,9 @@ function App() {
     const Navbar = () => {
         return (
             <nav className='navbar'>
-                <NavLink to='/groomers'>Groomers</NavLink>
-                <NavLink to='/jobs'>Job Listings</NavLink>
+                <NavLink to='/groomers'>Groomers Near Me</NavLink>
+                <NavLink to='/appointments'>Past Appointments</NavLink>
+                <NavLink to='/jobs'>Past Jobs</NavLink>
                 <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
             </nav>
         )

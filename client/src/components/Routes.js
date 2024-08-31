@@ -29,7 +29,7 @@ const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
                 {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
             </Route>
             <Route path="/signup">
-                <Signup />
+                <Signup setCurrentUser={setCurrentUser}/>
             </Route>
             <Route path="/login">
                 {isLoggedIn ? <Redirect to="/owners" /> : <Login setCurrentUser={handleLogin} />}

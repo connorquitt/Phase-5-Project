@@ -212,10 +212,10 @@ class Groomer(db.Model, SerializerMixin):
         return address
     
     @validates('business_name')
-    def validates_business_name(self, key, name):
-        if not isinstance(name, str):
+    def validates_business_name(self, key, business_name):
+        if not isinstance(business_name, str):
             raise ValueError('Invalid business name')
-        return name
+        return business_name
 
 
 
@@ -226,6 +226,7 @@ class Appointment(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     appointment_time = db.Column(db.String) #FIX
     service = db.Column(db.String)
+    isCompleted = db.Column(db.Bool)
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
@@ -238,6 +239,7 @@ class Appointment(db.Model, SerializerMixin):
             'id': self.id,
             'appointment_time': self.appointment_time, #when adding an Appointment instance without appointment_time it will crash
             'service': self.service,
+            'isCompleted': self.isCompleted,
             'groomer_id': self.groomer_id, #when adding a Appointment instance without groomer_id it will crash
             'pet_id': self.pet_id,
             'owner_id': self.owner_id,
@@ -248,7 +250,7 @@ class Appointment(db.Model, SerializerMixin):
         }
     
     def __repr__(self):
-        return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, owner: {self.owner}, service: {self.service}>'
+        return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, owner: {self.owner}, service: {self.service}, isCompleted: {self.isCompleted}>'
     
 
     #@validates('appointment_time')
@@ -262,6 +264,12 @@ class Appointment(db.Model, SerializerMixin):
         if not isinstance(service, str):
             raise ValueError('Invalid Service')
         return service
+    
+    @validates('isCompleted')
+    def validate_isCompleted(self, key, isCompleted):
+        if not isinstance(isCompleted, bool):
+            raise ValueError('Invalid isComplete Entry')
+        return isCompleted
 
     @validates('groomer_id')
     def validate_groomer_id(self, key, groomer_id):
@@ -282,6 +290,7 @@ class Job(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     arrival_time = db.Column(db.String) #FIX
+    isCompleted = db.Column(db.Bool)
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
@@ -296,6 +305,7 @@ class Job(db.Model, SerializerMixin):
         return {
             'id': self.id,
             'arrival_time': self.arrival_time, #when adding a Job instance without an arrival_time it will crash
+            'isCompleted': self.isCompleted,
             'worker_id': self.worker_id,
             'pet_id': self.pet_id,
             'owner_id': self.owner_id,
@@ -308,7 +318,7 @@ class Job(db.Model, SerializerMixin):
         }
 
     def __repr__(self):
-        return f'<Job id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}>'
+        return f'<Job id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}, isCompleted: {self.isCompleted}>'
     
 
     #@validates('arrival_time')
@@ -318,15 +328,21 @@ class Job(db.Model, SerializerMixin):
     #    if arrival_time < 0:
     #       raise ValueError('Arrival time must be a non-negative integer')
     #    return arrival_time
+
+    @validates('isCompleted')
+    def validate_isCompleted(self, key, isCompleted):
+        if not isinstance(isCompleted, bool):
+            raise ValueError('Invalid isCompleted Entry')
+        return isCompleted
     
-    #@validates('worker_id')
-    #def validate_worker_id(self, key, worker_id):
-    #    if not isinstance(worker_id, int):
-    #        raise ValueError('Worker ID must be an integer')
-    #   return worker_id
+    @validates('worker_id')
+    def validate_worker_id(self, key, worker_id):
+        if not isinstance(worker_id, int):
+            raise ValueError('Worker ID must be an integer')
+        return worker_id
     
-    #@validates('pet_id')
-    #def validate_pet_id(self, key, pet_id):
-    #    if not isinstance(pet_id, int):
-    #        raise ValueError('Pet ID must be an integer')
-    #    return pet_id
+    @validates('pet_id')
+    def validate_pet_id(self, key, pet_id):
+        if not isinstance(pet_id, int):
+            raise ValueError('Pet ID must be an integer')
+        return pet_id

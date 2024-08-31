@@ -5,7 +5,6 @@ import { UserContext } from '../App.js';
 
 function CreateListing({ user, setJobs }) {
     //const user = useContext(UserContext);
-    console.log(user)
 
     const [notes, setNotes] = useState('');
     const [jobType, setJobType] = useState('');
@@ -17,6 +16,7 @@ function CreateListing({ user, setJobs }) {
 
         const requestData = {
             arrival_time: parseInt(time),
+            isCompleted: false,
             owner_id: user.id,
             worker_id: 1,
             pet_id: selectedPet,

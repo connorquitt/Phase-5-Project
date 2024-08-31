@@ -32,8 +32,8 @@ function Signup({ setCurrentUser }) {
         const newUser = {
             username,
             password,
-            ...(userType === 'worker' && { petWalker, petSitter }),
-            ...(userType === 'groomer' && { address, hours })
+            ...(userType === 'worker' && { pet_walker: petWalker, pet_sitter: petSitter }),
+            ...(userType === 'groomer' && { business_name: businessName ,address, hours })
         };
 
         fetch(createEndpoint, {

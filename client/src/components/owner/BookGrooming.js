@@ -6,6 +6,7 @@ function BookGroomingAppt({ groomers, user }) {
     const [groomer, setGroomer] = useState('');
     const [selectedPet, setSelectedPet] = useState('');
     const [time, setTime] = useState('');
+    const [service, setService] = useState('');
 
     const handleAddAppointment = (e) => {
         e.preventDefault();
@@ -15,6 +16,8 @@ function BookGroomingAppt({ groomers, user }) {
             groomer_id: groomer,
             pet_id: selectedPet,
             owner_id: user.id,
+            service: service,
+            isCompleted: false,
         };
 
         fetch('/groomer_pets', {
@@ -29,6 +32,7 @@ function BookGroomingAppt({ groomers, user }) {
             setGroomer('');
             setSelectedPet('');
             setTime('');
+            setService('');
         })
         .catch(error => {
             console.error('Error adding grooming appointment:', error);
@@ -64,6 +68,21 @@ function BookGroomingAppt({ groomers, user }) {
                             <option value={pet.id} key={pet.id}>{pet.name}</option>
                         ))}
                     </select>
+                </label>
+                <label>
+                    Select Service:
+                    <select
+                        value={service}
+                        onChange={(e) => setService(e.target.value)}
+                        className='form-select'
+                        >
+                            <option value=''>Select...</option>
+                            <option value=''>1</option>
+                            <option value=''>2</option>
+                            <option value=''>3</option>
+                            <option value=''>4</option>
+                            <option value=''>5</option>
+                        </select>
                 </label>
                 <label>
                     Select Date:

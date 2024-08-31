@@ -2,12 +2,12 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.js';
-import PetCard from './PetCard';
 import DogCards from './DogCards';
 import MyJobs from './MyJobs';
 import CreateListing from './CreateListing';
 import CreatePet from './CreatePet';
 import BookGroomingAppt from './BookGrooming.js';
+import GroomingAppointments from './GroomingAppointments.js';
 
 function Owners() {
     const context = useContext(UserContext);
@@ -39,7 +39,7 @@ function Owners() {
     useEffect(() => {
         fetch('/appointments')
             .then(res => res.json())
-            .then(res => filterAppts(res))
+            .then(res => setAppointments(res))
     }, [])
 
     const deletePet = (petId) => {
@@ -56,16 +56,6 @@ function Owners() {
             console.error('Error deleting pet:', error);
         });
     };
-
-    const filterAppts = (appointments) => {
-        appointments.map((appointment) => {
-            if (appointment.petId == user.petId) {
-                console.log('fail:', {appointment})
-            }else {
-                console.log('else:', {appointment})
-            }
-        })
-    }
 
     const deleteJob = (jobId) => {
         fetch(`/jobs/${jobId}`, {
@@ -100,6 +90,7 @@ function Owners() {
           .catch(error => console.error('Error deleting appointment:', error));
       };
 
+
     return (
         <div className="main-container">
             <h2>Owners Dashboard</h2>
@@ -110,7 +101,7 @@ function Owners() {
             </div>
             <DogCards pets={pets} user={user} deletePet={deletePet} updatePet={updatePet} />
             <MyJobs jobs={jobs} user={user} deleteJob={deleteJob} />
-
+            <GroomingAppointments appointments={appointments} handleDeleteAppointment={handleDeleteAppointment}/>
         </div>
     );
 }
