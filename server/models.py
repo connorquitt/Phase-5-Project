@@ -18,6 +18,7 @@ class Owner(db.Model, SerializerMixin):
 
     pets = db.relationship('Pet', back_populates='owner')
     jobs = db.relationship('Job', back_populates='owner')
+    appointments = db.relationship('Appointment', back_populates='owner')
 
 
     def to_dict(self):

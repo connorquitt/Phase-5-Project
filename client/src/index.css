@@ -214,7 +214,7 @@ body {
 .cancel-button {
   background-color: red;
   color: white;
-  padding: 6px;
+  padding: 8px;
   border: none;
   cursor: pointer;
 }

@@ -58,7 +58,7 @@ function Owners() {
     };
 
     const filterAppts = (appointments) => {
-        const filteredAppts = appointments.map((appointment) => {
+        appointments.map((appointment) => {
             if (appointment.petId == user.petId) {
                 console.log('fail:', {appointment})
             }else {

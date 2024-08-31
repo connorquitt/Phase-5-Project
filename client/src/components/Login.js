@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 function Login({ setCurrentUser }) {
     const [userType, setUserType] = useState('groomer');
-    const [username, setUsername] = useState('Brandon');
+    const [username, setUsername] = useState('pawsclaws123');
     const [password, setPassword] = useState('password');
     const [error, setError] = useState('');
 
