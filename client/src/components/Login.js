@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 function Login({ setCurrentUser }) {
-    const [userType, setUserType] = useState('groomers');
-    const [username, setUsername] = useState('pawsclaws123');
+    const [userType, setUserType] = useState('worker');
+    const [username, setUsername] = useState('Trooper');
     const [password, setPassword] = useState('password');
     const [error, setError] = useState('');
 
@@ -18,13 +18,13 @@ function Login({ setCurrentUser }) {
         }
     
         const queryEndpoint = 
-            userType === 'owners' 
+            userType === 'owner' 
             ? '/owners' 
-            : userType === 'workers' 
+            : userType === 'worker' 
             ? '/workers' 
             : '/groomers';
     
-        fetch(`/${userType}`)
+        fetch(queryEndpoint)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch users: ${response.statusText}`);
@@ -36,7 +36,7 @@ function Login({ setCurrentUser }) {
                 if (user) {
                     setCurrentUser({ ...user, role: userType });
                     setError('');
-                    if (userType === 'groomers') {
+                    if (userType === 'groomer') {
                         history.push(`/groomers/${user.id}`); // Navigate to /groomers/:id
                     } else {
                         history.push(`/${userType}s`); // Navigate to /owners or /workers
@@ -68,9 +68,9 @@ function Login({ setCurrentUser }) {
                         onChange={(e) => setUserType(e.target.value)}
                     >
                         <option value="">Select...</option>
-                        <option value="owners">Owner</option>
-                        <option value="workers">Worker</option>
-                        <option value="groomers">Groomer</option>
+                        <option value="owner">Owner</option>
+                        <option value="worker">Worker</option>
+                        <option value="groomer">Groomer</option>
                     </select>
                 </label>
 
