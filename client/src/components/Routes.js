@@ -2,10 +2,12 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Owners from './owner/Owners';
 import Workers from './worker/Workers';
-import Groomers from './groomer/Groomers';
+import GroomerHomePage from './groomer/GroomerHomePage';
 import PetInfo from './owner/PetMoreInfo';
 import Login from './Login';
 import Signup from './Signup';
+
+import Need from './StillNeed.js';
 
 const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
     return (
@@ -16,17 +18,20 @@ const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
             <Route path="/workers">
                 {isLoggedIn ? <Workers /> : <Redirect to="/login" />}
             </Route>
-            <Route path="/groomers">
-                {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
-            </Route>
             <Route path="/groomers/:id">
-                {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
+                {isLoggedIn ? <GroomerHomePage /> : <Redirect to="/login" />}
+            </Route>
+            <Route path="/groomers">
+                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
             </Route>
             <Route path="/pet/:id">
                 {isLoggedIn ? <PetInfo /> : <Redirect to="/login" />}
             </Route>
             <Route path="/appointments">
-                {isLoggedIn ? <Groomers /> : <Redirect to="/login" />}
+                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
+            </Route>
+            <Route path="/jobs">
+                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
             </Route>
             <Route path="/signup">
                 <Signup setCurrentUser={setCurrentUser}/>

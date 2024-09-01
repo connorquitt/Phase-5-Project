@@ -2,29 +2,29 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 function Login({ setCurrentUser }) {
-    const [userType, setUserType] = useState('owner');
-    const [username, setUsername] = useState('johndoe');
-    const [password, setPassword] = useState('password123');
+    const [userType, setUserType] = useState('groomers');
+    const [username, setUsername] = useState('pawsclaws123');
+    const [password, setPassword] = useState('password');
     const [error, setError] = useState('');
 
     const history = useHistory();
 
     const handleLogin = (e) => {
         e.preventDefault();
-
+    
         if (!userType) {
             setError('Please select a user type.');
             return;
         }
-
+    
         const queryEndpoint = 
-            userType === 'owner' 
+            userType === 'owners' 
             ? '/owners' 
-            : userType === 'worker' 
+            : userType === 'workers' 
             ? '/workers' 
             : '/groomers';
-
-        fetch(queryEndpoint)
+    
+        fetch(`/${userType}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch users: ${response.statusText}`);
@@ -36,7 +36,11 @@ function Login({ setCurrentUser }) {
                 if (user) {
                     setCurrentUser({ ...user, role: userType });
                     setError('');
-                    history.push(`/${userType}s`);
+                    if (userType === 'groomers') {
+                        history.push(`/groomers/${user.id}`); // Navigate to /groomers/:id
+                    } else {
+                        history.push(`/${userType}s`); // Navigate to /owners or /workers
+                    }
                     console.log('Logged in as:', user);
                 } else {
                     setError('Invalid username or password.');
@@ -47,6 +51,7 @@ function Login({ setCurrentUser }) {
                 setError('Failed to fetch users.');
             });
     };
+    
 
     const redirectToSignup = () => {
         history.push('/signup');
@@ -63,9 +68,9 @@ function Login({ setCurrentUser }) {
                         onChange={(e) => setUserType(e.target.value)}
                     >
                         <option value="">Select...</option>
-                        <option value="owner">Owner</option>
-                        <option value="worker">Worker</option>
-                        <option value="groomer">Groomer</option>
+                        <option value="owners">Owner</option>
+                        <option value="workers">Worker</option>
+                        <option value="groomers">Groomer</option>
                     </select>
                 </label>
 

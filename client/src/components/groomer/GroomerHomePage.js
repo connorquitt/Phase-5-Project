@@ -2,9 +2,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.js';
 import GroomerCard from './GroomerCard.js';
-import PetMoreInfo from '../owner/PetMoreInfo';
 
-function Groomers() {
+function GroomerHomePage() {
     const context = useContext(UserContext);
     const [appointments, setAppointments] = useState([]);
 
@@ -50,7 +49,7 @@ function Groomers() {
     );
 }
 
-export default Groomers;
+export default GroomerHomePage;
 
 
 

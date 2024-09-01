@@ -10,9 +10,21 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     console.log(currentUser);
 
+    const Homepage = () => {
+        const role = currentUser.role
+        return (
+            role === 'owners'
+            ? '/owners'
+            : role === 'workers'
+            ? '/workers'
+            :`/groomers/${currentUser.id}`
+        )
+    }
+
     const Navbar = () => {
         return (
             <nav className='navbar'>
+                <NavLink to={`/${Homepage}`}>Homepage</NavLink>
                 <NavLink to='/groomers'>Groomers Near Me</NavLink>
                 <NavLink to='/appointments'>Past Appointments</NavLink>
                 <NavLink to='/jobs'>Past Jobs</NavLink>
