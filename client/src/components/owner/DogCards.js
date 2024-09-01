@@ -8,6 +8,8 @@ function DogCards({ pets, user, deletePet, updatePet }) {
         return <h2>Loading pets...</h2>;
     } else {
         return (
+            <>
+            <h1>My Pets:</h1>
             <div className="dog-cards-container">
                 {pets.map((pet) => {
                     if (pet && pet.owner === user.username) {
@@ -20,6 +22,7 @@ function DogCards({ pets, user, deletePet, updatePet }) {
                     return null;
                 })}
             </div>
+            </>
         );
     }
 }

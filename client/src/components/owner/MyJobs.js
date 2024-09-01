@@ -11,23 +11,28 @@ function MyJobs({ jobs, user, deleteJob }) {
     const filteredJobs = jobs.filter(job => userPetIds.has(job.pet_id));
 
     return (
-        <div>
+        <>
+        <h1>Upcoming Jobs:</h1>
+        <div className='dog-cards-container'>
             {filteredJobs.length === 0 ? (
                 <p>No jobs found for your pets.</p>
             ) : (
-                <ul>
+                <>
                     {filteredJobs.map(job => (
-                        <li key={job.id} className='card'>
-                            <strong>Job Type:</strong> {job.job_type}<br />
-                            <strong>Pet:</strong> {job.pet}<br />
-                            <strong>Arrival Time:</strong> {job.arrival_time}<br />
-                            <strong>Worker:</strong> {job.worker ? job.worker : 'none'}
-                            <button onClick={() => deleteJob(job.id)} className="delete-button">Delete</button>
-                        </li>
+                        <div key={job.id} className='pet-card-container'>
+                            <div className='card'>
+                                <strong>Job Type:</strong> {job.job_type}<br />
+                                <strong>Pet:</strong> {job.pet}<br />
+                                <strong>Arrival Time:</strong> {job.arrival_time}<br />
+                                <strong>Worker:</strong> {job.worker ? job.worker : 'none'}<br />
+                                <button onClick={() => deleteJob(job.id)} className="cancel-button">Cancel Listing</button>
+                            </div>
+                        </div>
                     ))}
-                </ul>
+                </>
             )}
         </div>
+        </>
     );
 }
 

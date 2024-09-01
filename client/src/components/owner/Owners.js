@@ -39,8 +39,9 @@ function Owners() {
     useEffect(() => {
         fetch('/appointments')
             .then(res => res.json())
-            .then(res => setAppointments(res))
+            .then(res => setAppointments(res.filter(appt => appt.owner_id == user.id)))
     }, [])
+
 
     const deletePet = (petId) => {
         fetch(`/pets/${petId}`, {
@@ -97,7 +98,7 @@ function Owners() {
             <div className="forms-container">
                 <CreateListing user={user} setJobs={setJobs} />
                 <CreatePet user={user} setPets={setPets} />
-                <BookGroomingAppt groomers={groomers} user={user} />
+                <BookGroomingAppt groomers={groomers} user={user} setAppointments={setAppointments} />
             </div>
             <DogCards pets={pets} user={user} deletePet={deletePet} updatePet={updatePet} />
             <MyJobs jobs={jobs} user={user} deleteJob={deleteJob} />

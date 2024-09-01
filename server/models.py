@@ -226,7 +226,7 @@ class Appointment(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     appointment_time = db.Column(db.String) #FIX
     service = db.Column(db.String)
-    isCompleted = db.Column(db.Bool)
+    isCompleted = db.Column(db.Boolean)
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
@@ -290,7 +290,7 @@ class Job(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     arrival_time = db.Column(db.String) #FIX
-    isCompleted = db.Column(db.Bool)
+    isCompleted = db.Column(db.Boolean)
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'))

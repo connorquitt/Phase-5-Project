@@ -1,7 +1,7 @@
 // src/components/CreateListing.js
 
-import React, { useState, useContext } from 'react';
-import { UserContext } from '../App.js';
+import React, { useState } from 'react';
+//import { UserContext } from '../App.js';
 
 function CreateListing({ user, setJobs }) {
     //const user = useContext(UserContext);
@@ -15,13 +15,15 @@ function CreateListing({ user, setJobs }) {
         e.preventDefault();
 
         const requestData = {
-            arrival_time: parseInt(time),
+            arrival_time: time,
             isCompleted: false,
             owner_id: user.id,
             worker_id: 1,
-            pet_id: selectedPet,
+            pet_id: parseInt(selectedPet),
             job_type: jobType,
         };
+
+        console.log('create job request data', requestData)
 
         fetch('/jobs', {
             method: 'POST',
@@ -30,18 +32,13 @@ function CreateListing({ user, setJobs }) {
             },
             body: JSON.stringify(requestData),
         })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(res => {
-            setJobs(prevJobs => [...prevJobs, res]);
-            setJobType('');
-            setSelectedPet('');
-            setNotes('');
-            setTime('');
+            .then(res => res.json())
+            .then(res => {
+                setJobs(prevJobs => [...prevJobs, res]);
+                setJobType('');
+                setSelectedPet('');
+                setNotes('');
+                setTime('');
         })
         .catch(error => {
             console.error('Error adding job:', error);

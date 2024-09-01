@@ -280,22 +280,22 @@ def jobs():
     elif request.method == 'POST':
         data = request.get_json()
 
-        try:
-            arrival_time = datetime.fromtimestamp(int(data.get('arrival_time')))
-        except (TypeError, ValueError) as e:
-            return make_response(jsonify({"error": f"Invalid arrival_time format: {e}"}), 400)
+        #try:
+        #    arrival_time = datetime.fromtimestamp(int(data.get('arrival_time')))
+        #except (TypeError, ValueError) as e:
+        #    return make_response(jsonify({"error": f"Invalid arrival_time format: {e}"}), 400)
         
         # Ensure all necessary data is present
-        required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type', 'isCompleted']
-        missing_fields = [field for field in required_fields if data.get(field) is None]
+        #required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type', 'isCompleted']
+        #missing_fields = [field for field in required_fields if data.get(field) is None]
         
-        if missing_fields:
-            return make_response(jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400)
+        #if missing_fields:
+        #    return make_response(jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400)
         
         # Create new Job record
         try:
             new_job = Job(
-                arrival_time=arrival_time,
+                arrival_time=data.get('arrival_time'),
                 isCompleted=data.get('isCompleted'),
                 worker_id=data.get('worker_id'),
                 pet_id=data.get('pet_id'),

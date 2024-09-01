@@ -59,19 +59,15 @@ function PetCard({ pet, onEdit }) {
             ) : isMoreInfo ? ( // Conditional rendering for more info view
                 <>
                     <PetMoreInfo pet={pet}/>
-                    <NavLink to={'/owners'}>
-                        <button onClick={handleMoreInfoClick} className="edit-button">Less Info</button>
-                    </NavLink>
+                        <button onClick={handleMoreInfoClick} className="info-button">Less Info</button>
                 </>
             ) : (
                 <>
                     <h1>Name: {pet.name}</h1>
                     <h3>Breed: {pet.breed}</h3>
                     <h3>Age: {pet.age}</h3>
-                    <button onClick={handleEditClick} className="edit-button">Edit Pet Info</button>
-                    <NavLink to={`/owners/${pet.id}`}>
-                        <button onClick={handleMoreInfoClick} className="more-info-button">More Info</button>
-                    </NavLink>
+                    <button onClick={handleEditClick} className="claim-button">Edit Pet Info</button>
+                    <button onClick={handleMoreInfoClick} className="info-button">More Info</button>
                 </>
             )}
         </div>

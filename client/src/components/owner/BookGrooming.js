@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-function BookGroomingAppt({ groomers, user }) {
+function BookGroomingAppt({ groomers, user, setAppointments }) {
     const [groomer, setGroomer] = useState('');
     const [selectedPet, setSelectedPet] = useState('');
     const [time, setTime] = useState('');
@@ -12,15 +12,17 @@ function BookGroomingAppt({ groomers, user }) {
         e.preventDefault();
 
         const requestData = {
-            appointment_time: parseInt(time),
-            groomer_id: groomer,
-            pet_id: selectedPet,
+            appointment_time: time,
+            groomer_id: parseInt(groomer),
+            pet_id: parseInt(selectedPet),
             owner_id: user.id,
             service: service,
             isCompleted: false,
         };
 
-        fetch('/groomer_pets', {
+        console.log('book appt request data', requestData)
+
+        fetch('/appointments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,6 +31,7 @@ function BookGroomingAppt({ groomers, user }) {
         })
         .then(res => res.json())
         .then(res => {
+            setAppointments(prevAppts => [...prevAppts, res])
             setGroomer('');
             setSelectedPet('');
             setTime('');
