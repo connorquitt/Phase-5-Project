@@ -251,9 +251,6 @@ def appointment_by_id(id):
     
     elif request.method == 'PATCH':
         data = request.get_json()
-        if 'appointment_time' in data:
-            appointment_time = datetime.fromtimestamp(data['appointment_time'])
-            appointment.appointment_time = appointment_time
         for attr, value in data.items():
             setattr(appointment, attr, value)
         db.session.add(appointment)

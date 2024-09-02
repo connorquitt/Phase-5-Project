@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.js';
+import { JobCard } from '../owner/MyJobs.js';
 
 function Worker() {
     const context = useContext(UserContext);
@@ -146,11 +147,8 @@ function Worker() {
                 ) : (
                     <div className="job-cards">
                         {upcomingJobs.map(job => (
-                            <div key={job.id} className="job-card">
-                                <strong>Job Type:</strong> {job.job_type}<br />
-                                <strong>Pet:</strong> {job.pet}<br />
-                                <strong>Arrival Time:</strong> {job.arrival_time}<br />
-                                <button onClick={() => handleCancelJob(job.id)} className="cancel-button">Cancel Job</button>
+                            <div className='job-card-container'>
+                                <JobCard job={job} />
                             </div>
                         ))}
                     </div>

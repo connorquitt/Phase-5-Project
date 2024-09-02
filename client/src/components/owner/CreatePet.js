@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../App';
 
-function CreatePet({ user, setPets }) {
+function CreatePet({ setPets }) {
     const [petName, setPetName] = useState('');
     const [breed, setBreed] = useState('');
     const [age, setAge] = useState('');
     const [isOther, setIsOther] = useState(false);
+
+    const context = useContext(UserContext);
+    const user = context.currentUser;
 
     const handleBreedChange = (e) => {
         const selectedBreed = e.target.value;

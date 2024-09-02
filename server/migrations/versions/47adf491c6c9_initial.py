@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 2744b4e68ff9
+Revision ID: 47adf491c6c9
 Revises: 
-Create Date: 2024-08-31 09:07:48.158384
+Create Date: 2024-09-02 01:30:42.862433
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2744b4e68ff9'
+revision = '47adf491c6c9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -54,6 +54,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('appointment_time', sa.String(), nullable=True),
     sa.Column('service', sa.String(), nullable=True),
+    sa.Column('isCompleted', sa.Boolean(), nullable=True),
     sa.Column('groomer_id', sa.Integer(), nullable=True),
     sa.Column('pet_id', sa.Integer(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
@@ -65,6 +66,7 @@ def upgrade():
     op.create_table('jobs',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('arrival_time', sa.String(), nullable=True),
+    sa.Column('isCompleted', sa.Boolean(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.Column('worker_id', sa.Integer(), nullable=True),
     sa.Column('pet_id', sa.Integer(), nullable=True),

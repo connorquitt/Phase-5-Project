@@ -7,7 +7,9 @@ import PetInfo from './owner/PetMoreInfo';
 import Login from './Login';
 import Signup from './Signup';
 
-import Need from './STILLNEED.JS';
+import Need from './StillNeed.js';
+import PastJobs from './owner/PastJobs.js';
+import PastAppointments from './owner/PastAppointments.js';
 
 const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
     return (
@@ -28,10 +30,10 @@ const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
                 {isLoggedIn ? <PetInfo /> : <Redirect to="/login" />}
             </Route>
             <Route path="/appointments">
-                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
+                {isLoggedIn ? <PastAppointments /> : <Redirect to="/login" />}
             </Route>
             <Route path="/jobs">
-                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
+                {isLoggedIn ? <PastJobs /> : <Redirect to="/login" />}
             </Route>
             <Route path="/signup">
                 <Signup setCurrentUser={setCurrentUser}/>

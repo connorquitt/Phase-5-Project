@@ -264,12 +264,6 @@ class Appointment(db.Model, SerializerMixin):
         if not isinstance(service, str):
             raise ValueError('Invalid Service')
         return service
-    
-    @validates('isCompleted')
-    def validate_isCompleted(self, key, isCompleted):
-        if not isinstance(isCompleted, bool):
-            raise ValueError('Invalid isComplete Entry')
-        return isCompleted
 
     @validates('groomer_id')
     def validate_groomer_id(self, key, groomer_id):
@@ -329,11 +323,6 @@ class Job(db.Model, SerializerMixin):
     #       raise ValueError('Arrival time must be a non-negative integer')
     #    return arrival_time
 
-    @validates('isCompleted')
-    def validate_isCompleted(self, key, isCompleted):
-        if not isinstance(isCompleted, bool):
-            raise ValueError('Invalid isCompleted Entry')
-        return isCompleted
     
     @validates('worker_id')
     def validate_worker_id(self, key, worker_id):

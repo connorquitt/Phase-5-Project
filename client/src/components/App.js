@@ -25,15 +25,25 @@ function App() {
     };
 
     const Navbar = () => {
-        return (
-            <nav className='navbar'>
-                <NavLink to='/owners'>Homepage</NavLink>
-                <NavLink to='/groomers'>Groomers Near Me</NavLink>
-                <NavLink to='/appointments'>Past Appointments</NavLink>
-                <NavLink to='/jobs'>Past Jobs</NavLink>
-                <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
-            </nav>
-        )
+        if (currentUser.role === 'owner') {
+            return (
+                <nav className='navbar'>
+                    <NavLink to='/owners'>HomePage</NavLink>
+                    <NavLink to='/groomers'>Groomers Near Me</NavLink>
+                    <NavLink to='/appointments'>Past Appointments</NavLink>
+                    <NavLink to='/jobs'>Past Jobs</NavLink>
+                    <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
+                </nav>
+            )
+        } if (currentUser.role === 'worker') {
+            return (
+                <nav className='navbar'>
+                    <NavLink to='/workers'>HomePage</NavLink>
+                    <NavLink to='/jobs'>Past Jobs</NavLink>
+                    <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
+                </nav>
+            )
+        }
     }
 
     const handleLogin = (user) => {

@@ -1,22 +1,20 @@
-// src/components/Owners.js
-
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../App.js';
 import DogCards from './DogCards';
 import MyJobs from './MyJobs';
 import CreateListing from './CreateListing';
-import CreatePet from './CreatePet';
+import CreatePet from './CreatePet.js';
 import BookGroomingAppt from './BookGrooming.js';
 import GroomingAppointments from './GroomingAppointments.js';
 
 function Owners() {
     const context = useContext(UserContext);
+    const user = context.currentUser;
     
     const [pets, setPets] = useState([]);
     const [jobs, setJobs] = useState([]);
     const [groomers, setGroomers] = useState([]);
     const [appointments, setAppointments] = useState([]);
-    const user = context.currentUser;
 
     console.log('owners context:', user)
 
@@ -41,7 +39,7 @@ function Owners() {
     useEffect(() => {
         fetch('/appointments')
             .then(res => res.json())
-            .then(res => setAppointments(res.filter(appt => appt.owner_id == user.id)))
+            .then(res => setAppointments(res))
     }, [])
 
 
@@ -103,8 +101,8 @@ function Owners() {
                 <BookGroomingAppt groomers={groomers} setAppointments={setAppointments} />
             </div>
             <DogCards pets={pets} deletePet={deletePet} updatePet={updatePet} />
-            <MyJobs jobs={jobs} deleteJob={deleteJob} />
-            <GroomingAppointments appointments={appointments} handleDeleteAppointment={handleDeleteAppointment}/>
+            <MyJobs jobs={jobs} setJobs={setJobs} deleteJob={deleteJob} />
+            <GroomingAppointments appointments={appointments} setAppointments={setAppointments} handleDeleteAppointment={handleDeleteAppointment}/>
         </div>
     );
 }

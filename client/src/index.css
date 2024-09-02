@@ -199,7 +199,7 @@ body {
 
 .form-submit-button:hover,
 .info-button:hover {
-  background-color: #0056b3;
+  background-color: darkblue;
 }
 
 .claim-button {
@@ -214,7 +214,7 @@ body {
 }
 
 .claim-button:hover {
-  background-color: #218838;
+  background-color: darkgreen;
 }
 
 .cancel-button,
@@ -225,9 +225,16 @@ body {
   border: none;
   padding: 8px;
   border-radius: 3px;
+  margin-top: 5px;
   margin-right: 5px;
   margin-left: 5px;
   cursor: pointer;
+}
+
+.cancel-button:hover,
+.delete-button:hover,
+.reset-button:hover {
+  background-color: darkred;
 }
 
 /* Appointment card container and more info positioning */
