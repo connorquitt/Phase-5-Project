@@ -1,9 +1,12 @@
-// src/components/DogCards.js
-
-import React from 'react';
+import React, { useContext } from 'react';
 import PetCard from './PetCard';
+import { UserContext } from '../App';
 
-function DogCards({ pets, user, deletePet, updatePet }) {
+function DogCards({ pets, deletePet, updatePet }) {
+
+    const context = useContext(UserContext);
+    const user = context.currentUser;
+
     if (!pets.length) {
         return <h2>Loading pets...</h2>;
     } else {

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 function Login({ setCurrentUser }) {
-    const [userType, setUserType] = useState('worker');
-    const [username, setUsername] = useState('Trooper');
-    const [password, setPassword] = useState('password');
+    const [userType, setUserType] = useState('owner');
+    const [username, setUsername] = useState('johndoe');
+    const [password, setPassword] = useState('password123');
     const [error, setError] = useState('');
 
     const history = useHistory();

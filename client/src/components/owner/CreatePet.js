@@ -1,11 +1,21 @@
-// src/components/CreatePet.js
-
 import React, { useState } from 'react';
 
 function CreatePet({ user, setPets }) {
     const [petName, setPetName] = useState('');
     const [breed, setBreed] = useState('');
     const [age, setAge] = useState('');
+    const [isOther, setIsOther] = useState(false);
+
+    const handleBreedChange = (e) => {
+        const selectedBreed = e.target.value;
+        if (selectedBreed === 'other') {
+            setBreed(''); // Clear the breed to allow input
+            setIsOther(true);
+        } else {
+            setBreed(selectedBreed);
+            setIsOther(false);
+        }
+    };
 
     const handleAddPet = (e) => {
         e.preventDefault();
@@ -30,10 +40,16 @@ function CreatePet({ user, setPets }) {
             setPetName('');
             setBreed('');
             setAge('');
+            setIsOther(false); // Reset the 'Other' state
         })
         .catch(error => {
             console.error('Error adding pet:', error);
         });
+    };
+
+    const handleReset = () => {
+        setBreed('select');
+        setIsOther(false);
     };
 
     return (
@@ -51,12 +67,41 @@ function CreatePet({ user, setPets }) {
                 </label>
                 <label>
                     Breed:
-                    <input
-                        type='text'
-                        value={breed}
-                        onChange={(e) => setBreed(e.target.value)}
-                        className="form-input"
-                    />
+                    {isOther ? (
+                        <>
+                            <button 
+                                type="button" 
+                                onClick={handleReset} 
+                                className="reset-button"
+                            >Reset</button>
+                            <input
+                                type='text'
+                                value={breed}
+                                onChange={(e) => setBreed(e.target.value)}
+                                className="form-input"
+                                placeholder="Enter dog breed"
+                            />
+                        </>
+                    ) : (
+                        <select
+                            value={breed}
+                            onChange={handleBreedChange}
+                            className="form-select"
+                        >
+                            <option value="select">Select a breed...</option>
+                            <option value="Caucasian Shepherd Dog">Caucasian Shepherd Dog</option>
+                            <option value="Bouvier des Flandres">Bouvier des Flandres</option>
+                            <option value="Grand Basset Griffon Vendéen">Grand Basset Griffon Vendéen</option>
+                            <option value="Hokkaido">Hokkaido</option>
+                            <option value="Japanese Terrier">Japanese Terrier</option>
+                            <option value="Hanoverian Scenthound">Hanoverian Scenthound</option>
+                            <option value="Tibetan Spaniel">Tibetan Spaniel</option>
+                            <option value="Border Collie">Border Collie</option>
+                            <option value="Curly-Coated Retriever">Curly-Coated Retriever</option>
+                            <option value="Skye Terrier">Skye Terrier</option>
+                            <option value="other">Other</option>
+                        </select>
+                    )}
                 </label>
                 <label>
                     Age:

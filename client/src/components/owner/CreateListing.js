@@ -1,21 +1,26 @@
-// src/components/CreateListing.js
+import React, { useState, useContext } from 'react';
+import { DateTime } from 'luxon';
+import { UserContext } from '../App';
 
-import React, { useState } from 'react';
-//import { UserContext } from '../App.js';
-
-function CreateListing({ user, setJobs }) {
-    //const user = useContext(UserContext);
-
+function CreateListing({ setJobs }) {
     const [notes, setNotes] = useState('');
     const [jobType, setJobType] = useState('');
     const [selectedPet, setSelectedPet] = useState('');
     const [time, setTime] = useState('');
 
+    const context = useContext(UserContext);
+    const user = context.currentUser;
+
     const handleAddListing = (e) => {
         e.preventDefault();
 
+        const formattedTime = DateTime.fromISO(time).toLocaleString(DateTime.DATETIME_SHORT);
+
+        console.log('time', time)
+        console.log('luxon time', formattedTime.toLocaleString(DateTime.DATETIME_FULL))
+
         const requestData = {
-            arrival_time: time,
+            arrival_time: formattedTime,
             isCompleted: false,
             owner_id: user.id,
             worker_id: 1,
@@ -23,7 +28,7 @@ function CreateListing({ user, setJobs }) {
             job_type: jobType,
         };
 
-        console.log('create job request data', requestData)
+        console.log('create job request data', requestData);
 
         fetch('/jobs', {
             method: 'POST',
@@ -39,10 +44,10 @@ function CreateListing({ user, setJobs }) {
                 setSelectedPet('');
                 setNotes('');
                 setTime('');
-        })
-        .catch(error => {
-            console.error('Error adding job:', error);
-        });
+            })
+            .catch(error => {
+                console.error('Error adding job:', error);
+            });
     };
 
     return (

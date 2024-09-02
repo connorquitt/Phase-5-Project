@@ -1,18 +1,24 @@
-// src/components/BookGroomingAppt.js
+import React, { useState, useContext } from 'react';
+import { DateTime } from 'luxon';
+import { UserContext } from '../App';
 
-import React, { useState } from 'react';
+function BookGroomingAppt({ groomers, setAppointments }) {
 
-function BookGroomingAppt({ groomers, user, setAppointments }) {
     const [groomer, setGroomer] = useState('');
     const [selectedPet, setSelectedPet] = useState('');
     const [time, setTime] = useState('');
     const [service, setService] = useState('');
 
+    const context = useContext(UserContext);
+    const user = context.currentUser;
+
     const handleAddAppointment = (e) => {
         e.preventDefault();
 
+        const formattedTime = DateTime.fromISO(time).toLocaleString(DateTime.DATETIME_SHORT)
+
         const requestData = {
-            appointment_time: time,
+            appointment_time: formattedTime,
             groomer_id: parseInt(groomer),
             pet_id: parseInt(selectedPet),
             owner_id: user.id,

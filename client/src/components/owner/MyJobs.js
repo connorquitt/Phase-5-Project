@@ -1,8 +1,11 @@
-// src/components/MyJobs.js
+import React, { useContext } from 'react';
+import { UserContext } from '../App';
 
-import React from 'react';
+function MyJobs({ jobs, deleteJob }) {
 
-function MyJobs({ jobs, user, deleteJob }) {
+    const context = useContext(UserContext);
+    const user = context.currentUser;
+
     if (!jobs.length) {
         return <h2>Loading jobs...</h2>;
     }

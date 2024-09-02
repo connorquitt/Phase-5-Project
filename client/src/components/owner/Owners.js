@@ -18,6 +18,8 @@ function Owners() {
     const [appointments, setAppointments] = useState([]);
     const user = context.currentUser;
 
+    console.log('owners context:', user)
+
     useEffect(() => {
         fetch('/pets')
             .then((res) => res.json())
@@ -78,7 +80,7 @@ function Owners() {
     };
 
     const handleDeleteAppointment = (appointmentId) => {
-        fetch(`/appointments/${appointmentId}`, { // Replace with your actual endpoint
+        fetch(`/appointments/${appointmentId}`, { 
           method: 'DELETE',
         })
           .then(response => {
@@ -96,12 +98,12 @@ function Owners() {
         <div className="main-container">
             <h2>Owners Dashboard</h2>
             <div className="forms-container">
-                <CreateListing user={user} setJobs={setJobs} />
-                <CreatePet user={user} setPets={setPets} />
-                <BookGroomingAppt groomers={groomers} user={user} setAppointments={setAppointments} />
+                <CreatePet setPets={setPets} />
+                <CreateListing setJobs={setJobs} />
+                <BookGroomingAppt groomers={groomers} setAppointments={setAppointments} />
             </div>
-            <DogCards pets={pets} user={user} deletePet={deletePet} updatePet={updatePet} />
-            <MyJobs jobs={jobs} user={user} deleteJob={deleteJob} />
+            <DogCards pets={pets} deletePet={deletePet} updatePet={updatePet} />
+            <MyJobs jobs={jobs} deleteJob={deleteJob} />
             <GroomingAppointments appointments={appointments} handleDeleteAppointment={handleDeleteAppointment}/>
         </div>
     );
