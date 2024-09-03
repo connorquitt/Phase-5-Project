@@ -10,6 +10,7 @@ import Signup from './Signup';
 import Need from './StillNeed.js';
 import PastJobs from './owner/PastJobs.js';
 import PastAppointments from './owner/PastAppointments.js';
+import GroomerList from './groomer/GroomerList.js'
 
 const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
     return (
@@ -24,7 +25,7 @@ const Routes = ({ isLoggedIn, setCurrentUser, handleLogin }) => {
                 {isLoggedIn ? <GroomerHomePage /> : <Redirect to="/login" />}
             </Route>
             <Route path="/groomers">
-                {isLoggedIn ? <Need /> : <Redirect to="/login" />}
+                {isLoggedIn ? <GroomerList /> : <Redirect to="/login" />}
             </Route>
             <Route path="/pet/:id">
                 {isLoggedIn ? <PetInfo /> : <Redirect to="/login" />}
