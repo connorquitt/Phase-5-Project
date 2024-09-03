@@ -2,12 +2,11 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from '../App';
 
 function JobCard({ job, deleteJob, setJobs }) {
-
     const [isCompleted, setIsCompleted] = useState(job.isCompleted);
 
     const handleIsCompleted = (jobId) => {
         const requestData = {
-            isCompleted: !isCompleted
+            isCompleted: !isCompleted,
         };
 
         fetch(`/jobs/${jobId}`, {
@@ -17,31 +16,63 @@ function JobCard({ job, deleteJob, setJobs }) {
             },
             body: JSON.stringify(requestData),
         })
-            .then(res => {
+            .then((res) => {
                 if (!res.ok) {
                     throw new Error('Failed to mark job as completed');
                 }
                 return res.json();
             })
-            .then(updatedJob => {
-                setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+            .then((updatedJob) => {
+                setIsCompleted(updatedJob.isCompleted);
+                // Update the parent component state only if setJobs is provided
+                if (setJobs) {
+                    setJobs((prevJobs) =>
+                        prevJobs.map((job) =>
+                            job.id === jobId ? updatedJob : job
+                        )
+                    );
+                } else {console.log('failed')}
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error marking job as completed:', error);
             });
     };
-    
+
     return (
-        <div className='card'>
-            <strong>Job Type:</strong> {job.job_type}<br />
-            <strong>Pet:</strong> {job.pet}<br />
-            <strong>Arrival Time:</strong> {job.arrival_time}<br />
-            <strong>Worker:</strong> {job.worker ? job.worker : 'none'}<br />
-            <strong>isCompleted:</strong> {<button onClick={() => handleIsCompleted(job.id)} className='form-submit-button' style={job.isCompleted ? {background: 'green'} : {background: 'hotpink'}}>{job.isCompleted ? 'True' : 'False'}</button>}<br />
-            <button onClick={() => deleteJob(job.id)} className="cancel-button">Cancel Listing</button>
+        <div className="card">
+            <strong>Job Type:</strong> {job.job_type}
+            <br />
+            <strong>Pet:</strong> {job.pet}
+            <br />
+            <strong>Arrival Time:</strong> {job.arrival_time}
+            <br />
+            <strong>Worker:</strong> {job.worker ? job.worker : 'none'}
+            <br />
+            <strong>isCompleted:</strong>{' '}
+            <button
+                onClick={() => handleIsCompleted(job.id)}
+                className="form-submit-button"
+                style={
+                    isCompleted
+                        ? { background: 'green' }
+                        : { background: 'hotpink' }
+                }
+            >
+                {isCompleted ? 'True' : 'False'}
+            </button>
+            <br />
+            {isCompleted ? null : (
+                <button
+                    onClick={() => deleteJob(job.id)}
+                    className="cancel-button"
+                >
+                    Cancel Listing
+                </button>
+            )}
         </div>
-    )
+    );
 }
+
 
 
 function MyJobs({ jobs, setJobs, deleteJob }) {

@@ -29,9 +29,9 @@ function App() {
             return (
                 <nav className='navbar'>
                     <NavLink to='/owners'>HomePage</NavLink>
-                    <NavLink to='/groomers'>Groomers Near Me</NavLink>
                     <NavLink to='/appointments'>Past Appointments</NavLink>
                     <NavLink to='/jobs'>Past Jobs</NavLink>
+                    <NavLink to='/groomers'>Groomers Near Me</NavLink>
                     <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
                 </nav>
             )
@@ -40,6 +40,14 @@ function App() {
                 <nav className='navbar'>
                     <NavLink to='/workers'>HomePage</NavLink>
                     <NavLink to='/jobs'>Past Jobs</NavLink>
+                    <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
+                </nav>
+            )
+        } else {
+            return (
+                <nav className='navbar'>
+                    <NavLink to={`/groomers/${currentUser.id}`}>HomePage</NavLink>
+                    <NavLink to='/appointments'>Past Appointments</NavLink>
                     <NavLink to='/login' onClick={handleLogout}>Logout</NavLink>
                 </nav>
             )

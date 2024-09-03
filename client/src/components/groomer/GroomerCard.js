@@ -7,8 +7,6 @@ function GroomerCard({ appointment, handleDelete }) {
     const [moreInfoPetId, setMoreInfoPetId] = useState(null);
     const [isMoreInfo, setIsMoreInfo] = useState(false);
 
-    console.log(appointment)
-
     
     function handleMoreInfo() {
         setIsMoreInfo(!isMoreInfo);

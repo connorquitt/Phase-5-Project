@@ -86,11 +86,11 @@ function BookGroomingAppt({ groomers, setAppointments }) {
                         className='form-select'
                         >
                             <option value=''>Select...</option>
-                            <option value=''>1</option>
-                            <option value=''>2</option>
-                            <option value=''>3</option>
-                            <option value=''>4</option>
-                            <option value=''>5</option>
+                            <option value='Bath'>Bath Dry</option>
+                            <option value='Haircut'>Haircut and Styling</option>
+                            <option value='Nails'>Nail Trimming</option>
+                            <option value='Deshedding'>Deshedding Treatment</option>
+                            <option value='Flea and Tick'>Flea and Tick Prevention</option>
                         </select>
                 </label>
                 <label>

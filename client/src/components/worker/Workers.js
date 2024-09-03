@@ -24,7 +24,7 @@ function Worker() {
                 });
                 setJobs(availableJobs);
 
-                const userUpcomingJobs = res.filter(job => job.worker_id === user.id);
+                const userUpcomingJobs = res.filter(job => job.worker_id === user.id && !job.isCompleted);
                 setUpcomingJobs(userUpcomingJobs);
             });
     }, [isWalker, isSitter, user.id]);
@@ -107,39 +107,57 @@ function Worker() {
             });
     };
 
+    function ProfileCard(userObj) {
+        const user = userObj.userObj
+        return (
+            <div className='card'>
+                {showPreferences ? (
+                    <div className="card">
+                        <strong style={{fontSize: '20px'}}>Update Preferences:</strong>
+                        <br/>
+                        <label>
+                            Dog-Walker
+                            <input
+                                type="checkbox"
+                                checked={isWalker}
+                                onChange={(e) => setIsWalker(e.target.checked)}
+                            />
+                            <br/>
+                        </label>
+                        <label>
+                            Dog-Sitter
+                            <input
+                                type="checkbox"
+                                checked={isSitter}
+                                onChange={(e) => setIsSitter(e.target.checked)}
+                            />
+                            <br/><br/>
+                        </label>
+                        <button onClick={handleSavePreferences}>Save Preferences</button>
+                    </div>
+                ) : (
+                    <div>
+                        <h1>{user.username}</h1>
+                        <strong>Role: </strong> {user.role}<br/>
+                        <strong>Pet Walker: </strong> {isWalker ? '✅' : '❌'}<br/>
+                        <strong>Pet Sitter: </strong> {isSitter ? '✅' : '❌'}<br/>
+                        <button
+                            type='button'
+                            className='form-submit-button'
+                            onClick={handleUpdatePreferences}
+                        >{showPreferences ? 'Cancel' : 'Update Job Preferences'}</button>
+                    </div>
+                )}
+            </div>
+        )
+    }
+
     return (
         <div className="main-container">
             <h2>Worker Dashboard</h2>
-            <h1>{user.username}</h1>
-            <button onClick={handleUpdatePreferences}>
-                {showPreferences ? 'Cancel' : 'Update Job Preferences'}
-            </button>
-            {showPreferences ? (
-                <div className="worker-roles">
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isWalker}
-                            onChange={(e) => setIsWalker(e.target.checked)}
-                        />
-                        Dog-Walker
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isSitter}
-                            onChange={(e) => setIsSitter(e.target.checked)}
-                        />
-                        Dog-Sitter
-                    </label>
-                    <button onClick={handleSavePreferences}>Save Preferences</button>
-                </div>
-            ) : (
-                <div className="current-preferences">
-                    <h4>Pet Walker: {isWalker ? 'Yes' : 'No'}</h4>
-                    <h4>Pet Sitter: {isSitter ? 'Yes' : 'No'}</h4>
-                </div>
-            )}
+            <ProfileCard userObj={user}/>
+            <br/>
+            
             <div className="jobs-container">
                 <h3>Upcoming Jobs</h3>
                 {upcomingJobs.length === 0 ? (
@@ -148,7 +166,7 @@ function Worker() {
                     <div className="job-cards">
                         {upcomingJobs.map(job => (
                             <div className='job-card-container'>
-                                <JobCard job={job} />
+                                <JobCard job={job} setJobs={setJobs}/>
                             </div>
                         ))}
                     </div>
@@ -161,11 +179,11 @@ function Worker() {
                 ) : (
                     <div className="job-cards">
                         {jobs.map(job => (
-                            <div key={job.id} className="job-card">
-                                <strong>Job Type:</strong> {job.job_type}<br />
-                                <strong>Pet:</strong> {job.pet}<br />
-                                <strong>Arrival Time:</strong> {job.arrival_time}<br />
-                                <button onClick={() => handleClaimJob(job.id)} className="claim-button">Claim</button>
+                            <div key={job.id} className="card">
+                                <strong>Job Type:</strong> {job.job_type}<br/>
+                                <strong>Pet:</strong> {job.pet}<br/>
+                                <strong>Arrival Time:</strong> {job.arrival_time}<br/>
+                                <button onClick={() => handleClaimJob(job.id)} className="claim-button">Claim Job</button>
                             </div>
                         ))}
                     </div>

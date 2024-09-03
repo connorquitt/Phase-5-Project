@@ -62,9 +62,9 @@ with app.app_context():
 
     # Add worker-pet appointments
     job1 = Job(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=worker1, pet=pet1, job_type='pet_walker', owner=owner1, isCompleted=True)
-    job2 = Job(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=True)
-    job3 = Job(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=worker3, pet=pet3, job_type='pet_walker', owner=owner1, isCompleted=False)
-    job4 = Job(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker4, pet=pet4, job_type='pet_sitter', owner=owner4, isCompleted=False)
+    job2 = Job(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
+    job3 = Job(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
+    job4 = Job(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker1, pet=pet4, job_type='pet_sitter', owner=owner4, isCompleted=False)
     job5 = Job(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5, job_type='pet_sitter', owner=owner5, isCompleted=False)
     db.session.add_all([job1, job2, job3, job4, job5])
     db.session.commit()
