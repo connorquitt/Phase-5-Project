@@ -14,13 +14,12 @@ with app.app_context():
     db.session.commit()
 
     # Add owners
-    admin = Owner(username='admin', password='password')
-    owner1 = Owner(username='johndoe', password='password')
+    owner1 = Owner(username='admin', password='password')
     owner2 = Owner(username='janedoe', password='password')
     owner3 = Owner(username='alice', password='password')
     owner4 = Owner(username='bob', password='password')
     owner5 = Owner(username='charlie', password='password')
-    db.session.add_all([admin, owner1, owner2, owner3, owner4, owner5])
+    db.session.add_all([owner1, owner2, owner3, owner4, owner5])
     db.session.commit()
 
     # Add pets

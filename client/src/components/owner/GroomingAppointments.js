@@ -60,14 +60,18 @@ function GroomingAppointments({ appointments, setAppointments, handleDeleteAppoi
     return (
       <>
         <h1>Grooming Appointments:</h1>
-        <div className="dog-cards-container">
-          {filteredAppointments.map(appointment => (
-            <div className='pet-card-container' key={appointment.id}>
-                <GroomingCard appointment={appointment} handleDeleteAppointment={handleDeleteAppointment} setAppointments={setAppointments}/>
+        <div>
+        {filteredAppointments.length === 0 ? (
+            <p>No appointments found</p>
+        ) : (
+          filteredAppointments.map(appointment => (
+            <div key={appointment.id} className='pet-card-container'>
+              <GroomingCard appointment={appointment} handleDeleteAppointment={handleDeleteAppointment} setAppointments={setAppointments}/>
             </div>
-          ))}
+          ))
+        )}
         </div>
-        </>
+      </>
       );
 }
 

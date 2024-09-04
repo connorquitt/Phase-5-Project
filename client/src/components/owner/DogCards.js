@@ -9,7 +9,12 @@ function DogCards({ pets, deletePet, updatePet }) {
 
     if (!pets.length) {
         return <h2>Loading pets...</h2>;
-    } else {
+    } if (pets.length === 0) {
+        console.log('its 0')
+    }
+     else {
+        console.log('else')
+        console.log(pets.length)
         return (
             <>
             <h1>My Pets:</h1>

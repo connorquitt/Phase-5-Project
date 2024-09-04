@@ -87,9 +87,9 @@ function MyJobs({ jobs, setJobs, deleteJob }) {
                     <p>No jobs found for your pets.</p>
                 ) : (
                     filteredJobs.map(job => (
-                        <div key={job.id} className='pet-card-container'>
+                        
                             <JobCard job={job} setJobs={setJobs} deleteJob={deleteJob}/>
-                        </div>
+                       
                     ))
                 )}
             </div>
