@@ -1,32 +1,33 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import { DateTime } from 'luxon';
 import { UserContext } from '../App';
 
 function BookGroomingAppt({ groomers, setAppointments }) {
-
-    const [groomer, setGroomer] = useState('');
-    const [selectedPet, setSelectedPet] = useState('');
-    const [time, setTime] = useState('');
-    const [service, setService] = useState('');
-
     const context = useContext(UserContext);
     const user = context.currentUser;
 
-    const handleAddAppointment = (e) => {
-        e.preventDefault();
+    const validationSchema = Yup.object({
+        groomer: Yup.string().required('Groomer is required'),
+        selectedPet: Yup.string().required('Pet is required'),
+        service: Yup.string().required('Service is required'),
+        time: Yup.string().required('Date and time are required'),
+    });
 
-        const formattedTime = DateTime.fromISO(time).toLocaleString(DateTime.DATETIME_SHORT)
+    const handleAddAppointment = (values, { resetForm }) => {
+        const formattedTime = DateTime.fromISO(values.time).toLocaleString(DateTime.DATETIME_SHORT);
 
         const requestData = {
             appointment_time: formattedTime,
-            groomer_id: parseInt(groomer),
-            pet_id: parseInt(selectedPet),
+            groomer_id: parseInt(values.groomer),
+            pet_id: parseInt(values.selectedPet),
             owner_id: user.id,
-            service: service,
+            service: values.service,
             isCompleted: false,
         };
 
-        console.log('book appt request data', requestData)
+        console.log('book appt request data', requestData);
 
         fetch('/appointments', {
             method: 'POST',
@@ -37,11 +38,9 @@ function BookGroomingAppt({ groomers, setAppointments }) {
         })
         .then(res => res.json())
         .then(res => {
-            setAppointments(prevAppts => [...prevAppts, res])
-            setGroomer('');
-            setSelectedPet('');
-            setTime('');
-            setService('');
+            console.log('response', res);
+            setAppointments(prevAppts => [...prevAppts, res]);
+            resetForm();
         })
         .catch(error => {
             console.error('Error adding grooming appointment:', error);
@@ -51,61 +50,70 @@ function BookGroomingAppt({ groomers, setAppointments }) {
     return (
         <div className="book-grooming-container">
             <h3>Book a Grooming Appointment</h3>
-            <form onSubmit={handleAddAppointment}>
-                <label>
-                    Select Groomer:
-                    <select
-                        value={groomer}
-                        onChange={(e) => setGroomer(e.target.value)}
-                        className="form-select"
-                    >
-                        <option value="">Select...</option>
-                        {groomers.map(groomer => (
-                            <option value={groomer.id} key={groomer.id}>{groomer.username}</option>
-                        ))}
-                    </select>
-                </label>
-                <label>
-                    Select Pet:
-                    <select
-                        value={selectedPet}
-                        onChange={(e) => setSelectedPet(e.target.value)}
-                        className="form-select"
-                    >
-                        <option value="">Select...</option>
-                        {user.pets.map(pet => (
-                            <option value={pet.id} key={pet.id}>{pet.name}</option>
-                        ))}
-                    </select>
-                </label>
-                <label>
-                    Select Service:
-                    <select
-                        value={service}
-                        onChange={(e) => setService(e.target.value)}
-                        className='form-select'
-                        >
-                            <option value=''>Select...</option>
-                            <option value='Bath'>Bath Dry</option>
-                            <option value='Haircut'>Haircut and Styling</option>
-                            <option value='Nails'>Nail Trimming</option>
-                            <option value='Deshedding'>Deshedding Treatment</option>
-                            <option value='Flea and Tick'>Flea and Tick Prevention</option>
-                        </select>
-                </label>
-                <label>
-                    Select Date:
-                    <input
-                        type="datetime-local"
-                        value={time}
-                        onChange={(e) => setTime(e.target.value)}
-                        className="form-input"
-                    />
-                </label>
-                <button type="submit" className="form-submit-button">Book Appointment</button>
-            </form>
+            <Formik
+                initialValues={{
+                    groomer: '',
+                    selectedPet: '',
+                    service: '',
+                    time: '',
+                }}
+                validationSchema={validationSchema}
+                onSubmit={handleAddAppointment}
+            >
+                {({ isSubmitting }) => (
+                    <Form>
+                        <label>
+                            Select Groomer:
+                            <Field as="select" name="groomer" className="form-select">
+                                <option value="">Select...</option>
+                                {groomers.map(groomer => (
+                                    <option value={groomer.id} key={groomer.id}>{groomer.username}</option>
+                                ))}
+                            </Field>
+                            <ErrorMessage name="groomer" component="div" className="error-message" style={{color: 'red'}} />
+                            <br/>
+                        </label>
+                        <label>
+                            Select Pet:
+                            <Field as="select" name="selectedPet" className="form-select">
+                                <option value="">Select...</option>
+                                {user.pets.map(pet => (
+                                    <option value={pet.id} key={pet.id}>{pet.name}</option>
+                                ))}
+                            </Field>
+                            <ErrorMessage name="selectedPet" component="div" className="error-message" style={{color: 'red'}} />
+                            <br/>
+
+                        </label>
+                        <label>
+                            Select Service:
+                            <Field as="select" name="service" className="form-select">
+                                <option value="">Select...</option>
+                                <option value="Bath">Bath Dry</option>
+                                <option value="Haircut">Haircut and Styling</option>
+                                <option value="Nails">Nail Trimming</option>
+                                <option value="Deshedding">Deshedding Treatment</option>
+                                <option value="Flea and Tick">Flea and Tick Prevention</option>
+                            </Field>
+                            <ErrorMessage name="service" component="div" className="error-message" style={{color: 'red'}} />
+                            <br/>
+
+                        </label>
+                        <label>
+                            Select Date:
+                            <Field type="datetime-local" name="time" className="form-input" />
+                            <ErrorMessage name="time" component="div" className="error-message" style={{color: 'red'}}/>
+                            <br/>
+                        </label>
+                        <button type="submit" className="form-submit-button" disabled={isSubmitting}>
+                            Book Appointment
+                        </button>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
 }
 
 export default BookGroomingAppt;
+

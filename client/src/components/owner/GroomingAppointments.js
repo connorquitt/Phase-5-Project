@@ -25,9 +25,7 @@ function GroomingCard({ appointment, handleDeleteAppointment, setAppointments })
             }
             return res.json();
         })
-        .then(updatedAppt => {
-            setAppointments(prevAppts => prevAppts.filter(appt => appt.id !== apptId));
-        })
+        .then(setIsCompleted(!isCompleted))
         .catch(error => {
             console.error('Error marking appointment as completed:', error);
         });
@@ -35,15 +33,16 @@ function GroomingCard({ appointment, handleDeleteAppointment, setAppointments })
 
   return (
     <div className='card'>
-      <h1><strong>Pet Name: </strong> {appointment.pet}</h1>
-      <strong>Appointment Time: </strong> {appointment.appointment_time} <br/>
+      <h1>{appointment.pet}</h1>
+      <strong>Appointment Time: </strong> {appointment.appointment_time} <br/><br/>
       <strong>Groomer: </strong>{appointment.groomer}<br />
-      <strong>isCompleted:</strong> {<button onClick={(e) => handleIsCompleted(appointment.id)} className='cancel-button' style={appointment.isCompleted ? {background: 'green'} : {background: 'hotpink'}}>{appointment.isCompleted ? 'True' : 'False'}</button>}<br />
-      <button
-        type='button'
-        className="delete-button"
-        onClick={() => handleDeleteAppointment(appointment.id)}
-      >Delete Appointment</button>
+      <strong>isCompleted:</strong> {<button onClick={(e) => handleIsCompleted(appointment.id)} className='cancel-button' style={isCompleted ? {background: 'green'} : {background: 'hotpink'}}>{isCompleted ? 'True' : 'False'}</button>}<br />
+      {isCompleted ? null 
+          : <button
+              type='button'
+              className="delete-button"
+              onClick={() => handleDeleteAppointment(appointment.id)}
+            >Delete Appointment</button>}
     </div>
   )
 }

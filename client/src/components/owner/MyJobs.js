@@ -22,17 +22,8 @@ function JobCard({ job, deleteJob, setJobs }) {
                 }
                 return res.json();
             })
-            .then((updatedJob) => {
-                setIsCompleted(updatedJob.isCompleted);
-                // Update the parent component state only if setJobs is provided
-                if (setJobs) {
-                    setJobs((prevJobs) =>
-                        prevJobs.map((job) =>
-                            job.id === jobId ? updatedJob : job
-                        )
-                    );
-                } else {console.log('failed')}
-            })
+            .then(setIsCompleted(!isCompleted))
+            
             .catch((error) => {
                 console.error('Error marking job as completed:', error);
             });
@@ -48,7 +39,7 @@ function JobCard({ job, deleteJob, setJobs }) {
             <br />
             <strong>Worker:</strong> {job.worker ? job.worker : 'none'}
             <br />
-            <strong>isCompleted:</strong>{' '}
+            <strong>isCompleted:</strong>
             <button
                 onClick={() => handleIsCompleted(job.id)}
                 className="form-submit-button"

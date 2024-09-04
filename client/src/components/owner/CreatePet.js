@@ -1,33 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import { UserContext } from '../App';
 
 function CreatePet({ setPets }) {
-    const [petName, setPetName] = useState('');
-    const [breed, setBreed] = useState('');
-    const [age, setAge] = useState('');
-    const [isOther, setIsOther] = useState(false);
-
     const context = useContext(UserContext);
     const user = context.currentUser;
 
-    const handleBreedChange = (e) => {
-        const selectedBreed = e.target.value;
-        if (selectedBreed === 'other') {
-            setBreed(''); // Clear the breed to allow input
-            setIsOther(true);
-        } else {
-            setBreed(selectedBreed);
-            setIsOther(false);
-        }
-    };
+    const validationSchema = Yup.object({
+        petName: Yup.string().required('Pet name is required'),
+        breed: Yup.string().required('Breed is required'),
+        age: Yup.number().required('Age is required').integer('Age must be an integer'),
+    });
 
-    const handleAddPet = (e) => {
-        e.preventDefault();
-
+    const handleAddPet = (values, { resetForm }) => {
         const requestData = {
-            name: petName,
-            breed: breed,
-            age: parseInt(age),
+            name: values.petName,
+            breed: values.breed,
+            age: parseInt(values.age),
             owner_id: user.id,
         };
 
@@ -41,83 +31,98 @@ function CreatePet({ setPets }) {
         .then(res => res.json())
         .then(res => {
             setPets(prevPets => [...prevPets, res]);
-            setPetName('');
-            setBreed('');
-            setAge('');
-            setIsOther(false); // Reset the 'Other' state
+            resetForm();
         })
         .catch(error => {
             console.error('Error adding pet:', error);
         });
     };
 
-    const handleReset = () => {
-        setBreed('select');
-        setIsOther(false);
-    };
-
     return (
         <div className="create-pet-container">
             <h3>Create a New Pet</h3>
-            <form onSubmit={handleAddPet}>
-                <label>
-                    Pet Name:
-                    <input
-                        type='text'
-                        value={petName}
-                        onChange={(e) => setPetName(e.target.value)}
-                        className="form-input"
-                    />
-                </label>
-                <label>
-                    Breed:
-                    {isOther ? (
-                        <>
-                            <button 
-                                type="button" 
-                                onClick={handleReset} 
-                                className="reset-button"
-                            >Reset</button>
-                            <input
-                                type='text'
-                                value={breed}
-                                onChange={(e) => setBreed(e.target.value)}
+            <Formik
+                initialValues={{
+                    petName: '',
+                    breed: '',
+                    age: '',
+                }}
+                validationSchema={validationSchema}
+                onSubmit={handleAddPet}
+            >
+                {({ values, isSubmitting, setFieldValue }) => (
+                    <Form>
+                        <label>
+                            Pet Name:
+                            <Field
+                                type="text"
+                                name="petName"
                                 className="form-input"
-                                placeholder="Enter dog breed"
                             />
-                        </>
-                    ) : (
-                        <select
-                            value={breed}
-                            onChange={handleBreedChange}
-                            className="form-select"
-                        >
-                            <option value="select">Select a breed...</option>
-                            <option value="Caucasian Shepherd Dog">Caucasian Shepherd Dog</option>
-                            <option value="Bouvier des Flandres">Bouvier des Flandres</option>
-                            <option value="Grand Basset Griffon Vendéen">Grand Basset Griffon Vendéen</option>
-                            <option value="Hokkaido">Hokkaido</option>
-                            <option value="Japanese Terrier">Japanese Terrier</option>
-                            <option value="Hanoverian Scenthound">Hanoverian Scenthound</option>
-                            <option value="Tibetan Spaniel">Tibetan Spaniel</option>
-                            <option value="Border Collie">Border Collie</option>
-                            <option value="Curly-Coated Retriever">Curly-Coated Retriever</option>
-                            <option value="Skye Terrier">Skye Terrier</option>
-                            <option value="other">Other</option>
-                        </select>
-                    )}
-                </label>
-                <label>
-                    Age:
-                    <input
-                        type='number'
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                        className="form-input"
-                    />
-                </label>
-                <button type="submit" className="form-submit-button">Add Pet</button>
-            </form>
+                            <ErrorMessage name="petName" component="div" className="error-message" style={{ color: 'red' }} />
+                            <br/>
+
+                        </label>
+                        <label>
+                            Breed:
+                            {values.breed === 'other' ? (
+                                <>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setFieldValue('breed', 'select')} 
+                                        className="reset-button"
+                                    >Reset</button>
+                                    <Field
+                                        type="text"
+                                        name="breed"
+                                        className="form-input"
+                                        placeholder="Enter dog breed"
+                                    />
+                                </>
+                            ) : (
+                                <Field as="select"
+                                    name="breed"
+                                    className="form-select"
+                                    onChange={(e) => {
+                                        const selectedBreed = e.target.value;
+                                        setFieldValue('breed', selectedBreed);
+                                    }}
+                                >
+                                    <option value="">Select a breed...</option>
+                                    <option value="Caucasian Shepherd Dog">Caucasian Shepherd Dog</option>
+                                    <option value="Bouvier des Flandres">Bouvier des Flandres</option>
+                                    <option value="Grand Basset Griffon Vendéen">Grand Basset Griffon Vendéen</option>
+                                    <option value="Hokkaido">Hokkaido</option>
+                                    <option value="Japanese Terrier">Japanese Terrier</option>
+                                    <option value="Hanoverian Scenthound">Hanoverian Scenthound</option>
+                                    <option value="Tibetan Spaniel">Tibetan Spaniel</option>
+                                    <option value="Border Collie">Border Collie</option>
+                                    <option value="Curly-Coated Retriever">Curly-Coated Retriever</option>
+                                    <option value="Skye Terrier">Skye Terrier</option>
+                                    <option value="other">Other</option>
+                                </Field>
+                            )}
+                            <ErrorMessage name="breed" component="div" className="error-message" style={{ color: 'red' }} />
+                            <br/>
+
+                        </label>
+                        <label>
+                            Age:
+                            <Field
+                                type="number"
+                                name="age"
+                                className="form-input"
+                            />
+                            <ErrorMessage name="age" component="div" className="error-message" style={{ color: 'red' }} />
+                            <br/>
+                            
+                        </label>
+                        <button type="submit" className="form-submit-button" disabled={isSubmitting}>
+                            Add Pet
+                        </button>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
 }

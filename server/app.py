@@ -71,7 +71,7 @@ def pets():
             jsonify([pet.to_dict() for pet in pets]), 200
         )
     
-    elif request.method == 'POST': #when adding a pet if there is no owner it breaks, make sure to add a default for the owner being none (need to add owner_id)
+    elif request.method == 'POST':
         data = request.get_json()
 
         owner_id = data.get('owner_id') or None
@@ -276,20 +276,6 @@ def jobs():
     
     elif request.method == 'POST':
         data = request.get_json()
-
-        #try:
-        #    arrival_time = datetime.fromtimestamp(int(data.get('arrival_time')))
-        #except (TypeError, ValueError) as e:
-        #    return make_response(jsonify({"error": f"Invalid arrival_time format: {e}"}), 400)
-        
-        # Ensure all necessary data is present
-        #required_fields = ['worker_id', 'pet_id', 'owner_id', 'job_type', 'isCompleted']
-        #missing_fields = [field for field in required_fields if data.get(field) is None]
-        
-        #if missing_fields:
-        #    return make_response(jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400)
-        
-        # Create new Job record
         try:
             new_job = Job(
                 arrival_time=data.get('arrival_time'),
@@ -303,9 +289,9 @@ def jobs():
             db.session.commit()
             return make_response(new_job.to_dict(), 201)
         except Exception as e:
-            # Log any exception that occurs
             print(f"Error creating Job: {e}")
             return make_response(jsonify({"error": "An error occurred while creating the job"}), 500)
+
 
 @app.route('/jobs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def job_by_id(id):

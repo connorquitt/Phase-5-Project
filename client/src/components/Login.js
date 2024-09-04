@@ -1,29 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 function Login({ setCurrentUser }) {
-    const [userType, setUserType] = useState('groomer');
-    const [username, setUsername] = useState('pawsclaws123');
-    const [password, setPassword] = useState('password');
-    const [error, setError] = useState('');
-
     const history = useHistory();
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-    
-        if (!userType) {
-            setError('Please select a user type.');
-            return;
-        }
-    
+    const validationSchema = Yup.object().shape({
+        userType: Yup.string().required('Please select a user type.'),
+        username: Yup.string().required('Username is required.'),
+        password: Yup.string().required('Password is required.'),
+    });
+
+    const handleLogin = (values, { setSubmitting, setErrors }) => {
+        const { userType, username, password } = values;
+
         const queryEndpoint = 
             userType === 'owner' 
             ? '/owners' 
             : userType === 'worker' 
             ? '/workers' 
             : '/groomers';
-    
+
         fetch(queryEndpoint)
             .then((response) => {
                 if (!response.ok) {
@@ -35,71 +33,93 @@ function Login({ setCurrentUser }) {
                 const user = users.find((u) => u.username === username && u.password === password);
                 if (user) {
                     setCurrentUser({ ...user, role: userType });
-                    setError('');
                     if (userType === 'groomer') {
-                        history.push(`/groomers/${user.id}`); // Navigate to /groomers/:id
+                        history.push(`/groomers/${user.id}`);
                     } else {
-                        history.push(`/${userType}s`); // Navigate to /owners or /workers
+                        history.push(`/${userType}s`);
                     }
                     console.log('Logged in as:', user);
                 } else {
-                    setError('Invalid username or password.');
+                    setErrors({ general: 'Invalid username or password.' });
                 }
+                setSubmitting(false);
             })
             .catch((error) => {
                 console.error(error);
-                setError('Failed to fetch users.');
+                setErrors({ general: 'Failed to fetch users.' });
+                setSubmitting(false);
             });
-    };
-    
-
-    const redirectToSignup = () => {
-        history.push('/signup');
     };
 
     return (
         <div className="login-container">
             <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <label>
-                    Select User Type:
-                    <select 
-                        value={userType} 
-                        onChange={(e) => setUserType(e.target.value)}
-                    >
-                        <option value="">Select...</option>
-                        <option value="owner">Owner</option>
-                        <option value="worker">Worker</option>
-                        <option value="groomer">Groomer</option>
-                    </select>
-                </label>
+            <Formik
+                initialValues={{ userType: '', username: '', password: '' }}
+                validationSchema={validationSchema}
+                onSubmit={handleLogin}
+            >
+                {({ isSubmitting, errors }) => (
+                    <Form>
+                        <label>
+                            <strong>Select User Type: </strong>
+                            <Field as="select" name="userType">
+                                <option value="">Select...</option>
+                                <option value="owner">Owner</option>
+                                <option value="worker">Worker</option>
+                                <option value="groomer">Groomer</option>
+                            </Field>
+                            <br/>
+                            <ErrorMessage name="userType" component="div" style={{ color: 'red' }} />
+                            <br/>
+                            
+                        </label>
+                        <br/><br/>
 
-                <label>
-                    Username:
-                    <input 
-                        type="text" 
-                        value={username} 
-                        onChange={(e) => setUsername(e.target.value)} 
-                        required 
-                    />
-                </label>
+                        <label>
+                            <strong>Username: </strong>
+                            <Field type="text" name="username" />
+                            <br/>
+                            <ErrorMessage name="username" component="div" style={{ color: 'red' }} />
+                            <br/>
 
-                <label>
-                    Password:
-                    <input 
-                        type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required 
-                    />
-                </label>
+                        </label>
+                        <br/><br/>
 
-                <button type="submit">Login</button>
+                        <label>
+                            <strong>Password: </strong>
+                            <Field type="password" name="password" />
+                            <br/>
+                            <ErrorMessage name="password" component="div" style={{ color: 'red' }} />
+                            <br/>
 
-                <button type="button" onClick={redirectToSignup}>Signup</button>
+                        </label>
+                        <br/><br/>
 
-                {error && <p className="error">{error}</p>}
-            </form>
+                        <button 
+                            type="submit" 
+                            className="form-submit-button" 
+                            style={{ width: '85px' }} 
+                            disabled={isSubmitting}
+                        >
+                            Login
+                        </button>
+
+                        <button 
+                            type="button" 
+                            onClick={() => history.push('/signup')} 
+                            className="form-submit-button" 
+                            style={{ width: '85px' }}
+                        >
+                            Signup
+                        </button>
+                        <br/><br/>
+
+                        {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
+                        <br/>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
 }

@@ -71,7 +71,7 @@ class Pet(db.Model, SerializerMixin):
     def to_dict(self):
         return {
             'id': self.id,
-            'owner': self.owner.username, #when adding a pet if there is no owner it breaks, make sure to add a default for the owner being none (need to add owner_id)
+            'owner': self.owner.username,
             'name': self.name,
             'breed': self.breed,
             'age': self.age,
@@ -224,7 +224,7 @@ class Appointment(db.Model, SerializerMixin):
     serialize_rules = ('-groomers.appointments', '-pets.appointments',)
 
     id = db.Column(db.Integer, primary_key=True)
-    appointment_time = db.Column(db.String) #FIX
+    appointment_time = db.Column(db.String)
     service = db.Column(db.String)
     isCompleted = db.Column(db.Boolean)
     groomer_id = db.Column(db.Integer, db.ForeignKey('groomers.id'))
@@ -237,10 +237,10 @@ class Appointment(db.Model, SerializerMixin):
     def to_dict(self):
         return {
             'id': self.id,
-            'appointment_time': self.appointment_time, #when adding an Appointment instance without appointment_time it will crash
+            'appointment_time': self.appointment_time,
             'service': self.service,
             'isCompleted': self.isCompleted,
-            'groomer_id': self.groomer_id, #when adding a Appointment instance without groomer_id it will crash
+            'groomer_id': self.groomer_id,
             'pet_id': self.pet_id,
             'owner_id': self.owner_id,
 
@@ -251,13 +251,6 @@ class Appointment(db.Model, SerializerMixin):
     
     def __repr__(self):
         return f'<Appointments id: {self.id}, appointment: {self.appointment_time}, groomer: {self.groomer}, pet: {self.pet}, owner: {self.owner}, service: {self.service}, isCompleted: {self.isCompleted}>'
-    
-
-    #@validates('appointment_time')
-    #def validate_appointment_time(self, key, appointment_time):
-    #    if not isinstance(appointment_time, str):
-    #        raise ValueError('Invalid appointment time')
-    #    return appointment_time
 
     @validates('service')
     def validate_service(self, key, service):
@@ -283,7 +276,7 @@ class Job(db.Model, SerializerMixin):
     __tablename__ = 'jobs'
 
     id = db.Column(db.Integer, primary_key=True)
-    arrival_time = db.Column(db.String) #FIX
+    arrival_time = db.Column(db.String)
     isCompleted = db.Column(db.Boolean)
     owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'))
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
@@ -291,14 +284,14 @@ class Job(db.Model, SerializerMixin):
     job_type = db.Column(db.String)
 
     worker = db.relationship('Worker', back_populates='jobs')
-    pet = db.relationship('Pet', back_populates='jobs') #would like Job.pet to show more info than just the pet
+    pet = db.relationship('Pet', back_populates='jobs')
     owner = db.relationship('Owner', back_populates='jobs')
 
 
     def to_dict(self):
         return {
             'id': self.id,
-            'arrival_time': self.arrival_time, #when adding a Job instance without an arrival_time it will crash
+            'arrival_time': self.arrival_time,
             'isCompleted': self.isCompleted,
             'worker_id': self.worker_id,
             'pet_id': self.pet_id,
@@ -306,22 +299,12 @@ class Job(db.Model, SerializerMixin):
             'job_type': self.job_type,
 
 
-            'worker': self.worker.username, #when adding a Job instance without a worker_id it will crash
-            'pet': self.pet.name, #when adding a Job instance without a pet_id it will crash
-            
+            'worker': self.worker.username,
+            'pet': self.pet.name,
         }
 
     def __repr__(self):
         return f'<Job id: {self.id}, arrival_time: {self.arrival_time}, worker: {self.worker}, pet: {self.pet}, isCompleted: {self.isCompleted}>'
-    
-
-    #@validates('arrival_time')
-    #def validate_arrival_time(self, key, arrival_time):
-    #    if not isinstance(arrival_time, int):
-    #        raise ValueError('Arrival time must be an integer')
-    #    if arrival_time < 0:
-    #       raise ValueError('Arrival time must be a non-negative integer')
-    #    return arrival_time
 
     
     @validates('worker_id')

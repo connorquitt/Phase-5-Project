@@ -14,13 +14,13 @@ with app.app_context():
     db.session.commit()
 
     # Add owners
-    owner1 = Owner(username='johndoe', password='password123')
-    owner2 = Owner(username='janedoe', password='password456')
-    owner3 = Owner(username='alice', password='alicepass')
-    owner4 = Owner(username='bob', password='bobpass')
-    owner5 = Owner(username='charlie', password='charliepass')
-    owner6 = Owner(username='None', password='password')
-    db.session.add_all([owner1, owner2, owner3, owner4, owner5, owner6])
+    admin = Owner(username='admin', password='password')
+    owner1 = Owner(username='johndoe', password='password')
+    owner2 = Owner(username='janedoe', password='password')
+    owner3 = Owner(username='alice', password='password')
+    owner4 = Owner(username='bob', password='password')
+    owner5 = Owner(username='charlie', password='password')
+    db.session.add_all([admin, owner1, owner2, owner3, owner4, owner5])
     db.session.commit()
 
     # Add pets
@@ -43,7 +43,7 @@ with app.app_context():
     db.session.commit()
 
     # Add groomers
-    groomer1 = Groomer(business_name='Paws and Claws Grooming', username='pawsclaws123', password='password', hours='9-5', address='123 Groomer Lane')
+    groomer1 = Groomer(business_name='Paws and Claws Grooming', username='admin', password='password', hours='9-5', address='123 Groomer Lane')
     groomer2 = Groomer(business_name='Furry Friends Salon', username='furryfriendsgroom', password='password', hours='10-6', address='456 Groomer St')
     groomer3 = Groomer(business_name='Happy Tails Spa', username='happytailsspa', password='password', hours='8-4', address='789 Groomer Blvd')
     groomer4 = Groomer(business_name='Snazzy Paws Boutique', username='snazzypaw', password='password', hours='7-3', address='101 Groomer Ave')
@@ -52,19 +52,19 @@ with app.app_context():
     db.session.commit()
 
     # Add groomer-pet appointments
-    appt1 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 20, 14, 0).timestamp()), service='Cleaning', groomer=groomer1, pet=pet1, owner=owner1, isCompleted=False)
-    appt2 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 21, 10, 0).timestamp()), service='Nail Clipping', groomer=groomer2, pet=pet2, owner=owner1, isCompleted=True)
-    appt3 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 22, 11, 0).timestamp()), service='Cleaning', groomer=groomer3, pet=pet3, owner=owner3, isCompleted=False)
-    appt4 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 23, 12, 0).timestamp()), service='Nail Clipping', groomer=groomer4, pet=pet4, owner=owner4, isCompleted=False)
-    appt5 = Appointment(appointment_time=int(datetime.datetime(2024, 8, 24, 15, 0).timestamp()), service='Cleaning', groomer=groomer5, pet=pet5, owner=owner5, isCompleted=False)
+    appt1 = Appointment(appointment_time='9/26/2024, 6:56 PM', service='Cleaning', groomer=groomer1, pet=pet1, owner=owner1, isCompleted=False)
+    appt2 = Appointment(appointment_time='9/9/2024, 6:56 PM', service='Nail Clipping', groomer=groomer2, pet=pet2, owner=owner1, isCompleted=True)
+    appt3 = Appointment(appointment_time='12/2/2024, 6:56 PM', service='Cleaning', groomer=groomer3, pet=pet3, owner=owner3, isCompleted=False)
+    appt4 = Appointment(appointment_time='1/3/2025, 6:56 PM', service='Nail Clipping', groomer=groomer4, pet=pet4, owner=owner4, isCompleted=False)
+    appt5 = Appointment(appointment_time='10/19/2024, 6:56 PM', service='Cleaning', groomer=groomer5, pet=pet5, owner=owner5, isCompleted=False)
     db.session.add_all([appt1, appt2, appt3, appt4, appt5])
     db.session.commit()
 
     # Add worker-pet appointments
-    job1 = Job(arrival_time=int(datetime.datetime(2024, 8, 25, 9, 0).timestamp()), worker=worker1, pet=pet1, job_type='pet_walker', owner=owner1, isCompleted=True)
-    job2 = Job(arrival_time=int(datetime.datetime(2024, 8, 26, 10, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
-    job3 = Job(arrival_time=int(datetime.datetime(2024, 8, 27, 11, 0).timestamp()), worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
-    job4 = Job(arrival_time=int(datetime.datetime(2024, 8, 28, 12, 0).timestamp()), worker=worker1, pet=pet4, job_type='pet_sitter', owner=owner4, isCompleted=False)
-    job5 = Job(arrival_time=int(datetime.datetime(2024, 8, 29, 13, 0).timestamp()), worker=worker5, pet=pet5, job_type='pet_sitter', owner=owner5, isCompleted=False)
+    job1 = Job(arrival_time='9/13/2024, 6:56 PM', worker=worker1, pet=pet1, job_type='pet_walker', owner=owner1, isCompleted=True)
+    job2 = Job(arrival_time='9/30/2024, 6:56 PM', worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
+    job3 = Job(arrival_time='9/24/2024, 6:56 PM', worker=unclaimed, pet=pet2, job_type='pet_walker', owner=owner1, isCompleted=False)
+    job4 = Job(arrival_time='10/3/2024, 6:56 PM', worker=worker1, pet=pet4, job_type='pet_sitter', owner=owner4, isCompleted=False)
+    job5 = Job(arrival_time='11/7/2024, 6:56 PM', worker=worker5, pet=pet5, job_type='pet_sitter', owner=owner5, isCompleted=False)
     db.session.add_all([job1, job2, job3, job4, job5])
     db.session.commit()

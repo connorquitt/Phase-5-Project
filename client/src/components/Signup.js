@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import * as Yup from 'yup';
 
 function Signup({ setCurrentUser }) {
+    const history = useHistory();
     const [userType, setUserType] = useState('owner');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -10,80 +12,115 @@ function Signup({ setCurrentUser }) {
     const [businessName, setBusinessName] = useState('');
     const [address, setAddress] = useState('');
     const [hours, setHours] = useState('');
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const history = useHistory();
+    const validationSchema = Yup.object().shape({
+        userType: Yup.string().required('Please select a user type.'),
+        username: Yup.string().required('Username is required.'),
+        password: Yup.string().required('Password is required.'),
+        businessName: Yup.string().nullable().when('userType', {
+            is: 'groomer',
+            then: Yup.string().required('Business name is required for groomers.'),
+            otherwise: Yup.string().nullable(),
+        }),
+        address: Yup.string().nullable().when('userType', {
+            is: 'groomer',
+            then: Yup.string().required('Address is required for groomers.'),
+            otherwise: Yup.string().nullable(),
+        }),
+        hours: Yup.string().nullable().when('userType', {
+            is: 'groomer',
+            then: Yup.string().required('Hours are required for groomers.'),
+            otherwise: Yup.string().nullable(),
+        }),
+    });
 
-    const handleSignup = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setIsSubmitting(true);
 
-        if (!userType) {
-            setError('Please select a user type.');
-            return;
-        }
+        try {
+            await validationSchema.validate({
+                userType,
+                username,
+                password,
+                businessName,
+                address,
+                hours,
+            }, { abortEarly: false });
 
-        const createEndpoint =
-            userType === 'owner'
-                ? '/owners'
-                : userType === 'worker'
-                ? '/workers'
-                : '/groomers';
+            const createEndpoint =
+                userType === 'owner'
+                    ? '/owners'
+                    : userType === 'worker'
+                    ? '/workers'
+                    : '/groomers';
 
-        const newUser = {
-            username,
-            password,
-            ...(userType === 'worker' && { pet_walker: petWalker, pet_sitter: petSitter }),
-            ...(userType === 'groomer' && { business_name: businessName ,address, hours })
-        };
+            const newUser = {
+                username,
+                password,
+                ...(userType === 'worker' && { pet_walker: petWalker, pet_sitter: petSitter }),
+                ...(userType === 'groomer' && { business_name: businessName, address, hours })
+            };
 
-        fetch(createEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newUser),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Failed to create user: ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then((user) => {
-                setCurrentUser({ ...user, role: userType });
-                setError('');
-                history.push(`/${userType}s`);
-                console.log('Signed up as:', user);
-            })
-            .catch((error) => {
-                console.error(error);
-                setError('Failed to create user.');
+            const response = await fetch(createEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newUser),
             });
-    };
 
-    const redirectToLogin = () => {
-        history.push('/login');
+            if (!response.ok) {
+                throw new Error(`Failed to create user: ${response.statusText}`);
+            }
+
+            const user = await response.json();
+            setCurrentUser({ ...user, role: userType });
+            history.push(`/${userType}s`);
+            console.log('Signed up as:', user);
+        } catch (error) {
+            console.error(error);
+            setErrors({ general: 'Failed to create user.' });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <div className="signup-container">
             <h2>Sign Up</h2>
-            <form onSubmit={handleSignup}>
-                <label>
-                    Select User Type:
-                    <select
-                        value={userType}
-                        onChange={(e) => setUserType(e.target.value)}
-                    >
-                        <option value="">Select...</option>
-                        <option value="owner">Owner</option>
-                        <option value="worker">Worker</option>
-                        <option value="groomer">Groomer</option>
-                    </select>
-                </label>
+            <form className="signup-form" onSubmit={handleSubmit}>
+                    <strong>Select User Type: </strong>
+                    <div>
+                        <button
+                            type="button"
+                            onClick={() => setUserType('owner')}
+                            className='claim-button'
+                        >
+                            Owner
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setUserType('worker')}
+                            className='claim-button'
+                        >
+                            Worker
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setUserType('groomer')}
+                            className='claim-button'
+                        >
+                            Groomer
+                        </button>
+                    </div>
+                {errors.userType && <div style={{ color: 'red' }}>{errors.userType}</div>}
+                <br /><br />
 
                 <label>
-                    Username:
+                    <strong>Username: </strong>
                     <input
                         type="text"
                         value={username}
@@ -91,9 +128,11 @@ function Signup({ setCurrentUser }) {
                         required
                     />
                 </label>
+                {errors.username && <div style={{ color: 'red' }}>{errors.username}</div>}
+                <br /><br />
 
                 <label>
-                    Password:
+                    <strong>Password: </strong>
                     <input
                         type="password"
                         value={password}
@@ -101,41 +140,48 @@ function Signup({ setCurrentUser }) {
                         required
                     />
                 </label>
+                {errors.password && <div style={{ color: 'red' }}>{errors.password}</div>}
+                <br /><br />
 
                 {userType === 'worker' && (
                     <>
                         <label>
-                            Pet Walker:
+                            <strong>Pet Walker: </strong>
                             <input
                                 type="checkbox"
                                 checked={petWalker}
-                                onChange={(e) => setPetWalker(e.target.checked)}
+                                onChange={() => setPetWalker(!petWalker)}
                             />
                         </label>
+                        <br />
                         <label>
-                            Pet Sitter:
+                            <strong>Pet Sitter: </strong>
                             <input
                                 type="checkbox"
                                 checked={petSitter}
-                                onChange={(e) => setPetSitter(e.target.checked)}
+                                onChange={() => setPetSitter(!petSitter)}
                             />
                         </label>
+                        <br /><br />
                     </>
                 )}
 
                 {userType === 'groomer' && (
                     <>
                         <label>
-                            Business Name:
+                            <strong>Business Name: </strong>
                             <input
-                                type='text'
+                                type="text"
                                 value={businessName}
                                 onChange={(e) => setBusinessName(e.target.value)}
                                 required
                             />
                         </label>
+                        {errors.businessName && <div style={{ color: 'red' }}>{errors.businessName}</div>}
+                        <br /><br />
+
                         <label>
-                            Address:
+                            <strong>Address: </strong>
                             <input
                                 type="text"
                                 value={address}
@@ -143,8 +189,11 @@ function Signup({ setCurrentUser }) {
                                 required
                             />
                         </label>
+                        {errors.address && <div style={{ color: 'red' }}>{errors.address}</div>}
+                        <br /><br />
+
                         <label>
-                            Hours:
+                            <strong>Hours: </strong>
                             <input
                                 type="text"
                                 value={hours}
@@ -152,13 +201,21 @@ function Signup({ setCurrentUser }) {
                                 required
                             />
                         </label>
+                        {errors.hours && <div style={{ color: 'red' }}>{errors.hours}</div>}
+                        <br /><br />
                     </>
                 )}
 
-                <button type="submit">Sign Up</button>
-                <button type="button" onClick={redirectToLogin}>Return to Login</button>
+                <div>
+                    <button type="submit" className='form-submit-button' disabled={isSubmitting}>
+                        Sign Up
+                    </button>
+                    <button type="button" onClick={() => history.push('/login')} className='form-submit-button'>
+                        Return to Login
+                    </button>
+                </div>
 
-                {error && <p className="error">{error}</p>}
+                {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
             </form>
         </div>
     );
